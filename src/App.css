@@ -1,0 +1,833 @@
+
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Gochi+Hand&display=swap');
+
+.App {
+  text-align: center;
+  font-family: 'Cinzel', serif;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.home_background_image{
+  background: url("./images/dark\ vintage\ rainy.jpg"), lightgray 50%;
+  width: 100%;
+  height: 100%;
+  border: 1px solid rgb(229, 229, 203);
+  flex-shrink: 0;
+  object-fit:fill;
+  object-position: 25% 25% 25% 25%;
+  border: 50px solid black;
+  border-bottom: 150px solid black;
+}
+
+.pagenotfound{
+  object-fit:scale-down;
+  object-position: center;
+  background: linear-gradient(0deg, rgb(229, 229, 203, 0.4) 0%, rgb(229, 229, 203, 0.8) 40%), url("./images/nopagefound.png"), lightgray 30% / cover no-repeat;
+  width: 45%;
+  height: 70%;
+  margin-left:490px;
+  border-radius: 10%;
+}
+
+.background_image{
+  width: 100%;
+  height: 100%;
+  flex-shrink: 0;
+  object-fit:fill;
+  object-position: 25% 25% 25% 25%;
+  border: 50px solid black;
+  border-bottom: 150px solid black;
+  background: linear-gradient(0deg, rgb(229, 229, 203, 0.8) 0%, rgb(229, 229, 203, 0.8) 100%), url("./images/dark\ vintage\ rainy.jpg"), lightgray 50% / cover no-repeat;
+}
+
+.Home{
+  width: 1790px;
+  height: 800px;
+  flex-shrink: 0;
+}
+
+.Browse{
+  width: 90%;
+  height: 58rem;
+  margin-left: 3rem;
+  flex-shrink: 0;
+
+}
+
+.HotelDisplay{
+  width: 1790px;
+  height: 800px;
+  flex-shrink: 0;
+}
+
+.ForgetPassword{
+  width: 1790px;
+  height: 800px;
+  flex-shrink: 0;
+}
+
+.Profile{
+  width: 1790px;
+  height: 800px;
+  flex-shrink: 0;
+}
+
+.Reservation{
+  width: 1790px;
+  height: 800px;
+  flex-shrink: 0;
+}
+
+.AdminHome{
+  width: 1790px;
+  height: 800px;
+  flex-shrink: 0;
+}
+
+.NoPageFound{
+  width: 1790px;
+  height: 800px;
+  flex-shrink: 0;
+}
+
+.hotel_slogan_box_effect{
+  border-radius: 50px;
+  background: rgb(217, 217, 217, 0.2);
+  display: flex;
+  width: 770px;
+  height: 337px;
+  flex-shrink: 0;
+  text-shadow: 4px 4px 4px 0px #000;
+  font-size: 70px;
+  font-weight: 800;
+  font-family: 'Cinzel', serif;
+  margin-left:900px;
+  margin-top: 30px;
+}
+
+.hotel_slogan{
+  display: flex;
+  width: 770px;
+  height: 337px;
+  flex-direction: column;
+  flex-shrink: 0;
+  color:white;
+  text-shadow: 10px 10px 10px 10px #000;
+  font-size: 86px;
+  font-family: Inter;
+  font-weight: 800;
+  font-family: 'Cinzel', serif;
+  margin-left:900px;
+  margin-top: 100px;
+  opacity: 1.0;
+}
+
+.hotel_name{
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  color: white;
+  text-shadow: 10px 10px 10px 10px rgb(0, 0, 0);
+  font-size: 22px;
+  font-weight: 600;
+  font-family: 'Cinzel', serif;
+  margin-top: 10px;
+}
+
+.browse_welcome{
+  display: flex;
+  width: 360px;
+  height: 39px;
+  flex-shrink: 0;
+  color: #1A120B;
+  text-shadow: 10px 10px 10px 10px #000;
+  font-size: 20px;
+  font-weight: 600;
+  font-family: 'Cinzel', serif;
+}
+
+.hotel_logo{
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  margin-top: 30px;
+}
+
+.back_button{
+  width: 67px;
+  height: 71px;
+  flex-shrink: 0;
+  margin-top: 30px;
+  margin-left:10px;
+}
+
+.hotel_stamp{
+  display : flex;
+  margin-top: 30px;
+  margin-left: 50px;
+}
+
+.sign_up_button{
+  width: 200px;
+  height: 70px;
+  border-radius: 100px;
+  background: #000;
+  color:white;
+  font-family: 'Cinzel', serif;
+  font-weight: light;
+  margin-top:80px;
+  font-size: 24px;
+}
+
+.login_button{
+  width: 200px;
+  height: 70px;
+  border-radius: 100px;
+  background: #000;
+  color:white;
+  font-family: 'Cinzel', serif;
+  font-weight: normal;
+  font-size: 24px;
+}
+
+.admin_login_button{
+  width: 200px;
+  height: 70px;
+  border-radius: 100px;
+  background: #000;
+  color:white;
+  font-family: 'Cinzel', serif;
+  font-weight: normal;
+  font-size: 24px;
+  margin-left: 20px;
+}
+
+.view_more_button{
+  width: 110px;
+  height: 50px;
+  border-radius: 100px;
+  background: rgb(60, 42, 33);
+  color:white;
+  font-family: 'Cinzel', serif;
+  font-weight:lighter;
+  font-size: 14px;
+  margin-left: 25px;
+  margin-top: 25px;
+}
+
+.login_link{
+  font-family: 'Cinzel', serif;
+  color:white;
+  font-weight: bold;
+  font-size: 26px;
+  text-shadow: 5px 5px 5px 5px #000;
+  display: flex;
+  margin-left: 750px;
+}
+
+.navbar{
+  width: 160px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50px;
+  border: 1px solid #000;
+  background: rgb(213, 206, 163, 0.6);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  display: flex;
+  margin-left: 0;
+}
+
+.display_navbar{
+  width: 160px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50px;
+  border: 1px solid #000;
+  background: rgb(213, 206, 163, 0.6);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  display: flex;
+  margin-left: 0;
+}
+
+.admin_navbar{
+  width: 80px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50px;
+  border: 1px solid #000;
+  background: rgb(213, 206, 163, 0.6);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  display: flex;
+  margin-left: 1200px;
+  margin-top:15px;
+}
+   
+.search_bar_div{
+  margin-left: 10%;
+}
+
+.favourites_div{
+  margin-top: 25px;
+  display: flex;
+  background-color: #3C2A21;
+  border-radius: 50px;
+}
+
+.searchbar{
+  width: 380px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50px;
+  border: 1px solid #000;
+  background: rgb(213, 206, 163, 0.6);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  margin-left:0px;
+  font-family: 'Cinzel', serif;
+  font-weight: lighter;
+  font-size: 14px;
+  padding-inline: 10px;
+  background-color: rgb(213, 206, 163, 0.6);
+  color:#000;
+}
+
+.types{
+  font-family: 'Cinzel', serif;
+  font-weight: 150;
+  font-size: 16px;
+  color:#000;
+  text-align: left;
+  margin-left: 80px;
+  margin-top: 30px;
+}
+
+.types_suites{
+  width: 90%;
+  height: 40rem;
+  flex-shrink: 0;
+  border-radius: 50px;
+  border: 1px solid #000;
+  background: rgb(213, 206, 163, 0.6);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  margin-left: 100px;
+  display: flex;
+  border-style:none;
+}
+
+.admin_room_box{
+  width: 1600px;
+  height: 630px;
+  flex-shrink: 0;
+  border-radius: 50px;
+  border: 1px solid #000;
+  background: rgb(213, 206, 163, 0.6);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  margin-left: 100px;
+  display: flex;
+  border-style:none;
+}
+
+.wishlist_box{
+  width: 1540px;
+  height: 500px;
+  flex-shrink: 0;
+  border-radius: 50px;
+  border: 1px solid #000;
+  background: rgb(213, 206, 163, 0.6);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  margin-left: 140px;
+  display: flex;
+}
+
+.loginregistration_box{
+  width: 1340px;
+  height: 450px;
+  flex-shrink: 0;
+  border-radius: 50px;
+  border: 1px solid #000;
+  background: rgba(237, 234, 210, 0.616);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  margin-left: 250px;
+  display: flex;
+  border-style: none;
+}
+
+.login_box{
+  width: 1340px;
+  height: 400px;
+  flex-shrink: 0;
+  border-radius: 50px;
+  border: 1px solid #000;
+  background: rgba(237, 234, 210, 0.616);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  margin-left: 250px;
+  display: flex;
+  border-style: none;
+}
+
+.registration_box{
+  width: 1340px;
+  height: 450px;
+  flex-shrink: 0;
+  border-radius: 50px;
+  border: 1px solid #000;
+  background: rgba(237, 234, 210, 0.616);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  margin-left: 250px;
+  display: flex;
+  border-style: none;
+}
+
+.logreg_input{
+  width: 400px;
+  height: 50px;
+  border-radius: 50px;
+  background: rgb(255, 255, 255, 0.7);
+  font-family: 'Cinzel', serif;
+  font-weight: 150;
+  font-size: 14px;
+  margin-top:20px;
+  text-align: center;
+  margin-bottom:10px;
+  border-style: none;
+}
+
+.profile_input{
+  width: 563px;
+  height: 52px;
+  border-radius: 50px;
+  background: rgb(255, 255, 255, 0.7);
+  font-family: 'Cinzel', serif;
+  font-weight: lighter;
+  text-align: center;
+  font-size: 13px;
+  margin-top:10px;
+  border-style: none;
+}
+
+.reservation_input{
+  width: 210px;
+  height: 32px;
+  border-radius: 50px;
+  background: rgb(255, 255, 255, 0.7);
+  font-family: 'Cinzel', serif;
+  font-weight: lighter;
+  font-size: 13px;
+  margin-top:10px;
+  text-align: center;
+  border-style: none ;
+}
+
+.reservation_label{
+  flex-direction:column;
+  width:150px;
+  font-size:small;
+  text-align: center;
+  margin-left: 30px;
+  font-family: 'Cinzel', serif;
+}
+
+.reservation_input_div{
+  display:flex;
+  flex-direction:column;
+  margin-right: 90px;
+  margin-left:90px;
+  margin-top: 25px;
+}
+
+.reg_input{
+  width: 400px;
+  height: 40px;
+  border-radius: 50px;
+  background: rgb(255, 255, 255, 0.7);
+  font-family: 'Cinzel', serif;
+  font-weight: normal;
+  font-size: 14px;
+  margin-top:10px;
+  margin-bottom: 20px;
+  text-align: center;
+  border-style: none;
+}
+
+.loginform{
+  margin-left:450px;
+  margin-top:80px;
+  display:flex;
+  flex-direction:column;
+}
+
+.login_label{
+  margin-left:150px;
+  font-family: 'Cinzel', serif;
+  font-size:14px;
+  margin-top: 5px;
+}
+
+.profile_label{
+  margin-left:240px;
+  font-family: 'Cinzel', serif;
+  font-size:14px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.reg_label{
+  margin-left:170px;
+  font-family: 'Cinzel', serif;
+  font-size:14px;
+  margin-top: 5px;
+}
+
+.profileform{
+  margin-left:350px;
+  margin-top:50px;
+  flex-direction:column;
+  display:flex;
+}
+
+.reservationform{
+  margin-left:20px;
+  margin-top:20px;
+}
+
+.reservationlist{
+  margin-left:100px;
+  margin-top:20px;
+}
+
+.profile_buttons_div{
+  display: flexbox;
+  margin-bottom: 20px;
+  margin-left: 140px;
+}
+
+.signupform{
+  margin-left:470px;
+  margin-top:20px;
+  display:flex;
+  flex-direction:column;
+}
+
+.displaybox{
+  width: 1600px;
+  height: 600px;
+  flex-shrink: 0;
+  border-radius: 50px;
+  background: rgba(244, 240, 210, 0.737);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  margin-left: 100px;
+  display: flex;
+}
+
+.profile_box{
+  width: 1240px;
+  height: 550px;
+  flex-shrink: 0;
+  border-radius: 50px;
+  background: rgba(248, 245, 227, 0.712);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  margin-left: 270px;
+  display: flex;
+}
+
+.forgetpassword_box{
+  width: 1000px;
+  height: 450px;
+  flex-shrink: 0;
+  border-radius: 50px;
+  background: rgba(248, 245, 227, 0.712);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  margin-left: 400px;
+  display: flex;
+}
+
+.available_rooms_box{
+  width: 1650px;
+  height: 650px;
+  flex-shrink: 0;
+  border-radius: 50px;
+  background: rgba(248, 245, 227, 0.712);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  margin-left: 70px;
+  display: flex;
+}
+
+.rooms_div{
+  background-color: rgb(229, 229, 203);
+  height: 600px;
+  width:340px;
+  margin:10px;
+  padding-top:5px;
+  padding-bottom:10px;
+  border-radius: 50px;
+  box-shadow: 0px 4px 4px 0px rgb(60, 42, 33, 0.2);
+}
+
+.reservation_form_box{
+  width: 1580px;
+  height: 560px;
+  flex-shrink: 0;
+  border-radius: 50px;
+  background: rgba(248, 245, 227, 0.712);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  margin-left: 100px;
+  display: flex;
+}
+
+.reservation_list_box{
+  width: 1440px;
+  height: 620px;
+  flex-shrink: 0;
+  border-radius: 50px;
+  background: rgba(220, 212, 169, 0.634);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  margin-left: 170px;
+  margin-top: 20px;
+  display: flex;
+}
+
+.suite_image-div{
+  width: 380px;
+  height: 600px;
+}
+
+.room_image_div{
+  width: 100%;
+  height: 300px;
+  object-fit: fill;
+}
+
+.suite_image{
+  border-radius: 12%;
+  width: 378px;
+  height: 600px;
+  object-fit: fill;
+  margin: 1px 1px 1px 1px;
+}
+
+.display_description{
+  width: 960px;
+  height: 100%;
+  text-align: left;
+  margin-left: 50px;
+  margin-top: 10px;
+  margin-right:50px;
+}
+
+.Descr_row1{
+  display: flex;
+}
+
+.rating_wishlist_div{
+  display:flex;
+  margin-left: 830px;
+}
+
+.suite_name{
+  font-family: 'Cinzel', serif;
+  font-weight:bold;
+  font-size: 18px;
+  color:#000;
+  margin-top: 10px;
+  display: flex;
+  width: 120px;
+}
+
+.room_number{
+  font-family: 'Cinzel', serif;
+  font-weight:normal;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.display_rating{
+  width: 124px;
+  height: 85px;
+  flex-shrink: 0;
+}
+
+.rooms_rating{
+  width: 124px;
+  height: 55px;
+  flex-shrink: 0;
+}
+
+.add_to_wishlist_button{
+  width: 20px;
+  height: 30px;
+  flex-shrink: 0;
+  margin-right:15px;
+  margin-left:15px;
+}
+
+.wishlist_button{
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  margin-top: 23px;
+  margin-left:20px;
+}
+
+.perks{
+  width: 730px;
+  height: 50px;
+  flex-shrink: 0;
+  border-radius: 50px;
+  background: #D5CEA3;
+  display: flex;
+}
+
+.perk_image{
+  margin-top:15px;
+  margin-left:40px;
+}
+
+.perk_description{
+  font-family: 'Cinzel', serif;
+  font-weight: lighter;
+  font-size: 13px;
+  margin-top:15px;
+  margin-left:20px;
+}
+
+.suite_description_div{
+  margin-left: 10px;
+  margin-top: 20px;
+  width: 940px;
+  height: 280px;
+  text-align: justify;
+  margin-right: 20px;
+}
+
+.suite_description{
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: lighter;
+  font-family: 'Cinzel', serif;
+  margin-right: 20px;
+  word-spacing: 2px;
+}
+
+.type_background{
+  border-radius: 100px;
+  background-color: rgb(229, 229, 203);
+  height: 80px;
+  width: 80px;
+  margin-top:50px;
+  margin-left: 100px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.admin_home_buttons{
+  border-radius: 15%;
+  background-color: rgb(229, 229, 203);
+  height: 70%;
+  width: 100%;
+  margin: 50px 50px 50px 50px;
+  text-align: center;
+  padding-inline: 10px;
+  font-family: 'Cinzel', serif;
+}
+
+.wishlist_item_background{
+  border-radius: 30%;
+  background-color: rgb(229, 229, 203);
+  height: 130px;
+  width: 150px;
+  margin-top:30px;
+  margin-left: 80px;
+  align-items: center;
+}
+
+.price{
+  font-family: 'Cinzel', serif;
+  font-size: 16px;
+  font-weight:lighter;
+}
+
+.price_reservation{
+  display:flex;
+  margin-bottom: 20px;
+}
+
+.reserve_button_div{
+  margin-left:430px;
+  margin-top:15px;
+}
+
+.reserve_room_button_div{
+  margin-left:100px;
+  margin-top:15px;
+}
+
+.reserve_now_button{
+  width: 200px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: 50px;
+  background: #3C2A21;
+  text-align: center;
+}
+
+.reserve_room_button{
+  width: 185px;
+  height: 65px;
+  flex-shrink: 0;
+  border-radius: 50px;
+  background: #3C2A21;
+}
+
+.reserve_button_text{
+  color:white;
+  font-family: 'Cinzel', serif;
+  font-size: 18px;
+  font-weight:bold;
+  text-align: center;
+}
+
+.rooms_info{
+  text-align: center;
+}
+
+.links{
+  color:#000;
+  font-family: 'Cinzel', serif;
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+}
