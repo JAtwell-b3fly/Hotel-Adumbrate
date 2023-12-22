@@ -19,6 +19,7 @@ const ReservationHistory = () => {
 
     const [reservations, setReservations] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
 
     const history = useHistory();
 
@@ -125,6 +126,8 @@ const ReservationHistory = () => {
                             className="admin_searchbar"
                             placeholder="Search here..."
                             style={{color: "black", fontWeight: "bolder"}}
+                            value={searchTerm}
+                            onChange={(event) => setSearchTerm(event.target.value)}
                         />
                         </div>
                     </div>
