@@ -1,76 +1,211 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import {React, useState, useEffect} from "react";
+import { db } from "../config/firebase";
+import { doc, setDoc, getDoc, deleteDoc } from "firebase/firestore"; 
+import { getAuth, deleteUser } from "firebase/auth";
+import { useHistory } from "react-router-dom";
 
 import edit from "../images/pencil.png";
 import delete_btn from "../images/recycle-bin.png";
 import save from "../images/checked.png";
 
-const ProfileForm = () => {
+import Loader from "./Loader";
+
+const ProfileForm = ({profileFullName, profileNameEdit, profileEmailAddress, profileEmailEdit, profileGender, profileGenderEdit, profilePhysicalAddress, profileAddressEdit, handleProfileFullNameChange, handleProfileEmailAddressChange, handleProfileGenderChange, handleProfilePhysicalAddressChange}) => {
+
+    const history = useHistory();
+    const [isdisplay, setIsDisplay] = useState(true);
+    const [userInfo, setUserInfo] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const isHandleDisplay = () => {
+        if (isdisplay === true) {
+            setIsDisplay(false)
+        } else {
+            setIsDisplay(true)
+        }
+    } 
+
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    const addProfile = (async() => {
+        setIsLoading(true)
+        try {
+            if(user && user.uid) {
+                const userDocRef = doc(db, "users", user.email);
+                await setDoc(userDocRef, {
+                    fullName: profileNameEdit !== "" ? profileNameEdit : userInfo.fullName,
+                    emailAddress: profileEmailEdit !== "" ? profileEmailAddress : userInfo.emailAddress,
+                    gender: profileGenderEdit !== "" ? profileGenderEdit: userInfo.gender,
+                    physicalAddress: profileAddressEdit !== "" ? profileAddressEdit: userInfo.physicalAddress,
+                    role: userInfo.role,
+                })
+                setIsLoading(false)
+                alert("User Information updated");
+                setIsDisplay(true);
+                
+            }
+            
+        } catch (error) {
+            console.log("Error" + error.message);
+        }
+    });
+
+
+    useEffect(() => {
+        getProfile();
+    }, []);
+
+    const getProfile = (async() => {
+        if (user) {
+            setIsLoading(true)
+            try {
+                const userDocRef = doc(db, "users", user.email);
+                const docSnap = await getDoc(userDocRef);
+
+                if (docSnap.exists()) {
+                    const userData = docSnap.data();
+                    setUserInfo(userData);
+                } else {
+                    console.log("No such document exists")
+                }
+            setIsLoading(false)
+            } catch (error) {
+                console.error("Error the user information: ", error.message)
+            }
+        }
+    })
+
     return(
         <div>
-            <div className="profile_box">
-                <div className="profileform">
-            
-                    <label className="profile_label">Full Name</label>
-                    <input
-                        name="fullName"
-                        type="text"
-                        className="profile_input"
-                        placeholder="Full Name"
-                    />         
-            
-                    <label className="profile_label">Email Address</label>
-                    <input
-                        name="emailAddress"
-                        type="email"
-                        className="profile_input"
-                        placeholder="Email Address"
-                    />
+            <form>
+                {isLoading ?
+                (
+                    <Loader />
+                )
+                :
+                (
+                    <>
+                    <div className="profile_box">
 
-                    <label className="profile_label">Password</label>
-                    <input
-                        name="password"
-                        type="password"
-                        className="profile_input"
-                        placeholder="Password"
-                    />
+{
+    isdisplay ?
 
-                    <label className="profile_label">Gender</label>
-                    <select
-                        name="gender"
-                        className="profile_input"
-                        defaultValue="Female"
+    <>
+        <div className="profile_display">
+
+            <label className="profile_label" style={{color: "white"}}>Full Name</label>
+            <div style={{height:"3.2rem", width:"35rem", backgroundColor:"whitesmoke", borderRadius:"5rem", marginBottom:"0.5rem"}}>
+                <p style={{color:"black", fontFamily:"Cinzel", fontSize:"80%", textAlign:"center", paddingTop:"0.6rem", fontWeight:"500"}}>{userInfo.fullName}</p>
+            </div>        
+
+            <label className="profile_label" style={{marginLeft:"14.5rem", color: "white"}}>Email Address</label>
+            <div style={{height:"3rem", width:"35rem", backgroundColor:"whitesmoke", borderRadius:"5rem", marginBottom:"0.5rem"}}>
+                <p style={{color:"black", fontFamily:"Cinzel", fontSize:"80%", textAlign:"center", paddingTop:"0.6rem", fontWeight:"500"}}>{userInfo.emailAddress}</p>
+            </div>
+
+            <label className="profile_label" style={{color: "white"}}>Gender</label>
+            <div style={{height:"3rem", width:"35rem", backgroundColor:"whitesmoke", borderRadius:"5rem", marginBottom:"1rem"}}>
+                <p style={{color:"black", fontFamily:"Cinzel", fontSize:"80%", textAlign:"center", paddingTop:"0.6rem", fontWeight:"500"}}>{userInfo.gender}</p>
+            </div>
+
+            <label className="profile_label" style={{marginLeft:"14.5rem", color: "white"}}>Physical Address</label>
+            <div style={{height:"3rem", width:"35rem", backgroundColor:"whitesmoke", borderRadius:"5rem", marginBottom:"1rem"}}>
+                <p style={{color:"black", fontFamily:"Cinzel", fontSize:"80%", textAlign:"center", paddingTop:"0.6rem", fontWeight:"500"}}>{userInfo.physicalAddress}</p>
+            </div>
+
+
+            <div className="profile_buttons_div">
+
+                <div style={{display:"flex", flexDirection:"column", marginLeft: "4rem"}}>
+                    <button
+                        type="button"
+                        style={{borderStyle:"none", backgroundColor:"unset"}}
+                        onClick={() => isHandleDisplay(!isdisplay)}
                     >
-                        <option value="Female">Female</option>
-                        <option value="Male">Male</option>
-                    </select>
-
-
-                    <div className="profile_buttons_div">
-
-                        <svg width= "40px" height="40px" className="perk_image" xmlns="http://www.w3.org/2000/svg">
-                            <image href={edit} height="40px" width= "40px" />
+                        <svg width= "2.7rem" height="2.7rem" className="perk_image" style={{backgroundColor: "whitesmoke", borderRadius: "15rem"}}>
+                            <image href={edit} height="100%" width= "100%" />
                         </svg>
-
-                        <svg width= "40px" height="40px" className="perk_image" xmlns="http://www.w3.org/2000/svg">
-                            <image href={delete_btn} height="40px" width= "40px" />
-                        </svg>
-                        
-                        <svg width= "40px" height="40px" className="perk_image" xmlns="http://www.w3.org/2000/svg">
-                            <image href={save} height="40px" width= "40px" />
-                        </svg>
-
-                    </div>
-
+                            <p className="contact_icon_text" style={{color: "white"}}>Update</p>
+                    </button>
                 </div>
 
             </div>
 
-            <div>
-                
+        </div>
+    </>
+
+    :
+
+    <>
+        <div className="profileform">
+
+            <label className="profile_label" style={{color: "white"}}>Full Name</label>
+            <input
+                name="profileNameEdit"
+                type="text"
+                onChange={handleProfileFullNameChange}
+                className="profile_input"
+                placeholder="Full Name"
+            />         
+
+            <label className="profile_label" style={{marginLeft:"14.5rem", color: "white"}}>Email Address</label>
+            <input
+                name="profileEmailEdit"
+                type="email"
+                onChange={handleProfileEmailAddressChange}
+                className="profile_input"
+                placeholder="Email Address"
+            />
+
+            <label className="profile_label" style={{color: "white"}}>Gender</label>
+            <select
+                name="profileGenderEdit"
+                className="profile_input"
+                onChange={handleProfileGenderChange}
+                defaultValue={"Female"}
+            >
+                <option value="Female">Female</option>
+                <option value="Male">Male</option>
+            </select>
+
+            <label className="profile_label" style={{marginLeft:"14.5rem", color: "white"}}>Physical Address</label>
+            <input
+                name="profileAddressEdit"
+                type="email"
+                onChange={handleProfilePhysicalAddressChange}
+                className="profile_input"
+                placeholder="Physical Address"
+            />
+
+
+            <div className="profile_buttons_div">
+
+                <div style={{display:"flex", flexDirection:"column", marginLeft: "3rem"}}>
+                    <button
+                        type="button"
+                        onClick={addProfile}
+                        style={{borderStyle:"none", backgroundColor:"unset"}}
+                    >
+                        <svg width= "2.7rem" height="2.7rem" className="perk_image"  style={{backgroundColor: "whitesmoke", borderRadius: "15rem"}}>
+                            <image href={save} height="100%" width= "100%" />
+                        </svg>
+                            <p className="contact_icon_text" style={{color: "white", marginLeft:"1.8rem"}}>Save</p>
+                    </button>
+                </div>
 
             </div>
 
+        </div>
+        </>
+        }
+
+
+        </div>
+    </>
+    )
+    }
+            </form>
         </div>
     )
 };

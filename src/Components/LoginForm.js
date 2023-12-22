@@ -1,37 +1,57 @@
 import { React, useState } from "react";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
-
+import {collection, getDocs} from "firebase/firestore";
+import { auth, db } from "../config/firebase"; 
 import { signInWithEmailAndPassword } from "firebase/auth";
-import {auth} from "../config/firebase";
+import * as Yup from "yup";
+import { Formik, Field, ErrorMessage, Form} from "formik";
 
 import password_hide from "../images/hidden.png";
 import password_show from "../images/view.png";
 
+import Loader from "./Loader";
+
 const LoginForm = () => {
 
+    //const [loginEmailAddress, setLoginEmailAddress] = useState("");
+    //const [loginPassword, setLoginPassword] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+
+    /*const handleLogin = async() => {
+        //Sign in with email and password
+       
+        try {
+            setIsLoading(true);
+
+            //Sign in with email and password
+            const userCredential = await signInWithEmailAndPassword(auth, loginEmailAddress, loginPassword);
+            const user = userCredential.user;
+
+            //Get user data from Firestore based on the email address
+            const querySnapShot = await getDocs(collection(db, "users"));
+
+            querySnapShot.forEach((doc) => {
+                if (doc.data().emailAddress === loginEmailAddress) {
+                    const role = doc.data().role;
+
+                    //Navigate to the appropriate screen based on the user's role
+                    if (role === "user") {
+                        history.push("/browse");
+                        alert("User Login Successful");
+                    } else if (role === "admin") {
+                        history.push("/adminhome");
+                        alert("Admin Login Successful");
+                    }
+                }
+            })
+            setIsLoading(false);
+        } catch (error) {
+            console.log("Error during login: ", error.message); 
+        }
+    };*/
+
     const history = useHistory();
-
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-
-    const goToBrowse = (() => {
-        signInWithEmailAndPassword(auth, email, password).then(() => {
-            alert("Login Successful");
-            history.push("/browse");
-        }).catch((error) => {
-    
-        })
-    })
-
-    const goToAdminHome = (() => {
-        signInWithEmailAndPassword(auth, email, password).then(() => {
-            alert("Login Successful");
-            history.push("/login/adminhome");
-        }).catch((error) => {
-
-        })
-    })
 
     const [showPassword, setShowPassword] = useState(false);
 
@@ -40,28 +60,79 @@ const LoginForm = () => {
       };
 
     return(
+        
         <div> 
-            <div className="login_box">
-                <div className="loginform">
+            { isLoading && <Loader />}
+            <Formik
+                enableReinitialize={true}
+                initialValues={{loginEmailAddress: "", loginPassword: ""}}
+                validationSchema={Yup.object().shape({
+                    loginEmailAddress: Yup.string().email("Invalid email address").required("Email address is required"),
+                    loginPassword: Yup.string().required("Password is required"),
+                })}
+                onSubmit={async (values) => {
+                    console.log("Form submitted:", values);
+                    try {
+                        //Loader should show when form submitting
+                        setIsLoading(true);
+                        //Sign in with email and password
+                        const userCredential = await signInWithEmailAndPassword(auth, values.loginEmailAddress, values.loginPassword);
+                        const user = userCredential.user;
+
+                        //Get user data from Firestore based on the email address
+                        const querySnapShot = await getDocs(collection(db, "users"));
+
+                        querySnapShot.forEach((doc) => {
+                            if (doc.data().emailAddress === values.loginEmailAddress) {
+                                const role = doc.data().role;
+
+                                //Navigate to the appropriate screen based on the user's role
+                                if (role === "user") {
+                                    history.push("/browse");
+                                    alert("User Login Successful");
+                                } else if (role === "admin") {
+                                    history.push("/adminhome");
+                                    alert("Admin Login Successful");
+                                }
+                            }
+                        });
+                        setIsLoading(false);
+                    } catch (error) {
+                        console.log("Error during login: ", error.message);
+                        setIsLoading(false);
+                    } finally {
+                        setIsLoading(false);
+                    }
+                }}
+            >
             
-                    <label className="login_label">Email Address</label>
-                    <input
-                        name="emailAddress"
+            {() => (
+                <>
+
+                    <div className="login_box">
+                <Form className="loginform">
+                
+            
+                    <div style={{display: "flex", flexDirection:"column"}}>
+                    <label className="login_label" style={{color: "white"}}>Email Address</label>
+                    <Field
+                        name="loginEmailAddress"
                         type="email"
                         className="logreg_input"
                         placeholder="Email Address"
-                        onChange={(event) => setEmail(event.target.value)}
-                    />         
+                        //onChange={(event) => setLoginEmailAddress(event.target.value)}
+                    />
+                    <ErrorMessage name="loginEmailAddress" component="div" className="error-message" />         
             
-                    <label className="login_label" style={{marginLeft:"165px"}}>Password</label>
+                    <label className="login_label"  style={{color: "white"}}>Password</label>
 
                     <div style={{display:"flex"}}>
-                        <input
-                            name="password"
+                        <Field
+                            name="loginPassword"
                             type={showPassword? "text" :"password"}
                             className="logreg_input"
                             placeholder="Password"
-                            onChange={(event)=> setPassword(event.target.value)}
+                            //onChange={(event) => setLoginPassword(event.target.value)}
                         />
 
                         <button
@@ -72,50 +143,52 @@ const LoginForm = () => {
                         >
                             {showPassword? 
                                 <>
-                                    <svg width="40px" height="40px" xmlns="http://www.w3.org/2000/svg">
-                                        <image href={password_hide} height="50px" width="30px" />
+                                    <svg width="2rem" height="2rem" style={{backgroundColor: "rgb(213, 206, 163, 0.25)", borderRadius: "5rem"}}>
+                                        <image href={password_hide} height="100%" width="100%" />
                                     </svg>
                                 </>
                             :
                                 <>
-                                    <svg width="40px" height="40px" xmlns="http://www.w3.org/2000/svg">
-                                        <image href={password_show} height="50px" width="30px" />
+                                    <svg width="2rem" height="2rem" style={{backgroundColor: "rgb(213, 206, 163, 0.25)", borderRadius: "5rem"}}>
+                                        <image href={password_show} height="100%" width="100%" />
                                     </svg>
                                 </>
                             }    
                         </button>
                     </div>
-                </div>
+                    <ErrorMessage name="loginPassword" component="div" className="error-message" />
+                    </div>
+                    
+                </Form>
             </div>
 
-            <div>
-                <div className="login_link" style={{marginLeft:"820px"}}>
-                    <Link to="/forgotpassword" style={{fontSize:"26px", color:"white"}}><h6>Forgot Password?</h6></Link>
+            <div style={{marginBottom:"0rem", marginTop:"1rem"}}>
+                <div className="login_link" style={{marginTop:"1rem", marginBottom: "1rem", marginLeft: "28rem"}}>
+                    <Link to="/forgotpassword" style={{color:"white"}}><h6 className="login_link" style={{backgroundColor: "rgba(0,0,0,0.4)"}}>Forgot Password?</h6></Link>
                 </div>
 
-                <div style={{marginLeft:"700px"}}>
-                    <button type="button"
+                <div style={{marginLeft:"46rem", marginTop:"1rem"}}>
+                    <button 
+                    type="submit"
                     name="login"
                     className="login_button"
-                    onClick={goToBrowse}
+                    disabled={isLoading}
+                    //onClick={handleLogin}
                     >
-                    <p className="reserve_button_text">Login</p>
+                    Login
                     </button>
 
-                    <button type="button"
-                    name="admin_login"
-                    className="admin_login_button"
-                    onClick={goToAdminHome}
-                    >
-                     <p className="reserve_button_text">Admin Login</p>
-                    </button>
+                    
                 </div>
 
-                <div className="login_link">
-                    <h6>Don't Have An Account? </h6><div style={{marginLeft:"10px"}}><Link to="/signup"  style={{fontSize:"26px", color:"white"}}><h6>Sign Up</h6></Link></div>
+                <div className="login_link" style={{marginLeft:"41rem", marginTop:"1rem"}}>
+                    <h6 style={{backgroundColor: "rgba(0,0,0,0.4)"}}>Don't Have An Account? </h6><div style={{marginLeft:"1rem"}}><Link to="/signup"  style={{fontSize:"110%", color:"white"}}><h6 style={{backgroundColor: "rgba(0,0,0,0.4)"}}>Sign Up</h6></Link></div>
                 </div>
             </div>
 
+                </>
+            )}
+            </Formik>
         </div>
     )
 };

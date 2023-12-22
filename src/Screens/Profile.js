@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
+import { getAuth, signOut } from "firebase/auth";
 
 import ProfileForm from "../Components/ProfileForm";
 
@@ -8,16 +9,27 @@ import hotel_logo from "../images/hotel.png";
 import profile_button from "../images/profile-user.png";
 import wishlist_button from "../images/wishlist.png";
 import back from "../images/back.png";
-import map_button from "../images/gps.png";
 import logout_button from "../images/log-out.png";
+import contact_us from "../images/telephone.png";
+import about_us from "../images/information-button.png";
 
-const Profile = () => {
+const Profile = ({profileFullName, profileNameEdit, profileEmailAddress, profileEmailEdit, profileGender, profileGenderEdit, profilePhysicalAddress, profileAddressEdit, handleProfileFullNameChange, handleProfileEmailAddressChange, handleProfileGenderChange, handleProfilePhysicalAddressChange}) => {
 
     const history = useHistory();
 
     const goToBrowse = (() => {
         history.push("/browse")
     })
+
+    const Logout = (() => {
+        const auth = getAuth();
+        signOut(auth).then(() => {
+            history.push("/");
+            alert("You are Logged Out");
+        }).catch((error) => {
+            console.error("You could not be logged out", error);
+        })
+    });
 
     return(
         <div className="Profile">
@@ -29,42 +41,46 @@ const Profile = () => {
                         style={{borderStyle:"none", backgroundColor:"unset"}}
                         onClick={goToBrowse}
                         >
-                            <svg width="50px" height="50px" xmlns="http://www.w3.org/2000/svg">
-                                <image href={hotel_logo} height="40px" width="40px" />
+                            <svg width="2.5rem" height="2.5rem">
+                                <image href={hotel_logo} height="100%" width="100%" />
                             </svg>
                         </button>
                     </div>
 
-                    <div className="back_button">
-                        <svg width="50px" height="50px" xmlns="http://www.w3.org/2000/svg">
-                            <image href={back} height="40px" width="40px" />
-                        </svg>
-                    </div>
+                    <div className="display_navbar" style={{marginLeft:"69rem", width: "10.5rem"}}>
 
-                    <div className="display_navbar">
-
-                        <Link to ="https://www.google.co.za/maps/place/Basilica+Cathedral+of+Saint+Denis/@48.9354313,2.3572644,17z/data=!4m14!1m7!3m6!1s0x47e66eb312fc18bd:0xf2ffbe58c6ffe57c!2sBasilica+Cathedral+of+Saint+Denis!8m2!3d48.9354278!4d2.3598393!16zL20vMGhrYjg!3m5!1s0x47e66eb312fc18bd:0xf2ffbe58c6ffe57c!8m2!3d48.9354278!4d2.3598393!16zL20vMGhrYjg?entry=ttu"  style={{height:"50px", width:"40px"}}>
-                            <svg width="50px" height="50px" xmlns="http://www.w3.org/2000/svg">
-                                <image href={map_button} height="40px" width="40px" />
+                    <Link to ="/aboutus"  style={{height:"2.9rem", width:"2.5rem"}}>
+                            <svg width="2.5rem" height="2.5rem">
+                                <image href={about_us} height="100%" width="100%" />
                             </svg>
                         </Link>
 
-                        <Link to="/wishlist" style={{height:"50px", width:"40px"}}>
-                            <svg width="50px" height="50px" xmlns="http://www.w3.org/2000/svg">
-                                <image href={wishlist_button} height="40px" width="40px" />
+                        <Link to ="/contactus"  style={{height:"2.9rem", width:"2.5rem"}}>
+                            <svg width="2.5rem" height="2.5rem">
+                                <image href={contact_us} height="100%" width="100%" />
                             </svg>
                         </Link>
 
-                        <Link to="/profile" style={{height:"50px", width:"40px"}}>
-                            <svg width="50px" height="50px" xmlns="http://www.w3.org/2000/svg">
-                                <image href={profile_button} height="40px" width="40px" />
+                        {/*<Link to="/wishlist" style={{height:"2.9rem", width:"2.5rem"}}>
+                            <svg width="2.5rem" height="2.5rem">
+                                <image href={wishlist_button} height="100%" width="100%" />
+                            </svg>
+                        </Link>*/}
+
+                        <Link to="/profile" style={{height:"2.9rem", width:"2.5rem"}}>
+                            <svg width="2.5rem" height="2.5rem">
+                                <image href={profile_button} height="100%" width="100%" />
                             </svg> 
                         </Link>
 
-                            <svg width="50px" height="50px" xmlns="http://www.w3.org/2000/svg">
-                                <image href={logout_button} height="40px" width="40px" />
+                        <button
+                        style={{borderStyle:"none", backgroundColor:"unset"}}
+                        onClick={Logout}
+                        >
+                            <svg width="2.5rem" height="2.5rem">
+                                <image href={logout_button} height="100%" width="100%" />
                             </svg> 
-
+                        </button>
                     </div>
 
                 </div>
@@ -72,7 +88,20 @@ const Profile = () => {
                 <div>
                         <div>
                             <div>
-                                <ProfileForm />
+                                <ProfileForm 
+                                        profileFullName={profileFullName}
+                                        profileNameEdit={profileNameEdit}
+                                        profileEmailAddress={profileEmailAddress}
+                                        profileEmailEdit={profileEmailEdit}
+                                        profilePhysicalAddress={profilePhysicalAddress}
+                                        profileAddressEdit={profileAddressEdit}
+                                        profileGender={profileGender}
+                                        profileGenderEdit={profileGenderEdit}
+                                        handleProfileFullNameChange={handleProfileFullNameChange}
+                                        handleProfileEmailAddressChange={handleProfileEmailAddressChange}
+                                        handleProfilePhysicalAddressChange={handleProfilePhysicalAddressChange}
+                                        handleProfileGenderChange={handleProfileGenderChange}
+                                />
                             </div>
                         </div>
 

@@ -1,24 +1,78 @@
-import React from "react";
+import {React, useState, useEffect} from "react";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
+import { getAuth, signOut } from "firebase/auth";
+import { db } from "../config/firebase";
+import { doc, setDoc, getDoc } from "firebase/firestore"; 
 
 import hotel_logo from "../images/hotel.png";
-import appointment_button from "../images/appointment.png";
 import profile_button from "../images/profile-user.png";
-import wishlist_button from "../images/wishlist.png";
-import single from "../images/man.png";
-import couple from "../images/couple-silhouette.png";
-import family from "../images/together.png";
-import hotel_image from "../images/Hotel Adumbrate.jpg";
-import map_button from "../images/gps.png";
+import reservation from "../images/waiting-list.png";
+import hotel_image from "../images/Hotel Room Single 4.png";
+import about_us from "../images/information-button.png";
 import logout_button from "../images/log-out.png";
+import contact_us from "../images/telephone.png";
+
+import Loader from "../Components/Loader";
 
 const Browse = () => {
 
     const history = useHistory();
+    const [userInfo, setUserInfo] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    
 
     const goToBrowse = (() => {
         history.push("/browse")
+    });
+
+    const goToAvailableRooms = (() => {
+        history.push("./availablerooms")
+    });
+
+    const goToAboutUs = (() => {
+        history.push("/aboutus")
+    });
+
+    const Logout = (() => {
+        setIsLoading(true);
+        const auth = getAuth();
+        signOut(auth).then(() => {
+            setIsLoading(false);
+            history.push("/");
+            alert("You are Logged Out");
+        }).catch((error) => {
+            console.error("You could not be logged out", error);
+        })
+    });
+
+    useEffect(() => {
+        getProfile();
+        console.log("User information: ", userInfo)
+    }, []);
+
+    const getProfile = (async() => {
+        setIsLoading(true);
+
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        if (user) {
+            try {
+                const userDocRef = doc(db, "users", user.email);
+                const docSnap = await getDoc(userDocRef);
+
+                if (docSnap.exists()) {
+                    const userData = docSnap.data();
+                    setUserInfo(userData);
+                } else {
+                    console.log("No such document exists")
+                }
+            } catch (error) {
+                console.error("Error the user information: ", error.message)
+            }
+        }
+        setIsLoading(false);
     })
 
     return(
@@ -31,122 +85,108 @@ const Browse = () => {
                         style={{borderStyle:"none", backgroundColor:"unset"}}
                         onClick={goToBrowse}
                         >
-                            <svg width="50px" height="50px" xmlns="http://www.w3.org/2000/svg">
-                                <image href={hotel_logo} height="40px" width="40px" />
+                            <svg width="2.5rem" height="2.5rem">
+                                <image href={hotel_logo} height="100%" width="100%" />
                             </svg>
                         </button>
                     </div>
 
-                    <div style={{marginLeft:"0px", marginTop:"10px"}}>
-                        <h3  className="browse_welcome">Hi Jasmin, Let us help you find your preferred stay</h3>
+                    <div style={{marginLeft:"0.2rem", marginTop:"1rem"}}>
+                        <h3  className="browse_welcome" style={{color: "white"}}>Hi {userInfo.fullName}, Let us help you find your preferred stay</h3>
                     </div>
 
-                    <div className="search_bar_div" style={{marginTop:"14px"}}>
-                        <input name="searchbar"
-                                type="text"
-                                className="searchbar"
-                                placeholder="Search here..."
-                        />
-                </div>
+                    <div className="display_navbar" style={{marginLeft:"46rem", width: "10.5rem"}}>
 
-                    <div className="navbar" style={{marginLeft:"0px",marginTop:"14px"}}> 
-
-                        <Link to ="https://www.google.co.za/maps/place/Basilica+Cathedral+of+Saint+Denis/@48.9354313,2.3572644,17z/data=!4m14!1m7!3m6!1s0x47e66eb312fc18bd:0xf2ffbe58c6ffe57c!2sBasilica+Cathedral+of+Saint+Denis!8m2!3d48.9354278!4d2.3598393!16zL20vMGhrYjg!3m5!1s0x47e66eb312fc18bd:0xf2ffbe58c6ffe57c!8m2!3d48.9354278!4d2.3598393!16zL20vMGhrYjg?entry=ttu"  style={{height:"50px", width:"40px"}}>
-                            <svg width="50px" height="50px" xmlns="http://www.w3.org/2000/svg">
-                                <image href={map_button} height="40px" width="40px" />
+                        <Link to ="/aboutus"  style={{height:"2.9rem", width:"2.5rem"}}>
+                            <svg width="2.5rem" height="2.5rem">
+                                <image href={about_us} height="100%" width="100%" />
                             </svg>
                         </Link>
 
-                        <Link to="/wishlist" style={{height:"50px", width:"40px"}}>
-                            <svg width="50px" height="50px" xmlns="http://www.w3.org/2000/svg">
-                                <image href={wishlist_button} height="40px" width="40px" />
+                        <Link to ="/contactus"  style={{height:"2.9rem", width:"2.5rem"}}>
+                            <svg width="2.5rem" height="2.5rem">
+                                <image href={contact_us} height="100%" width="100%" />
                             </svg>
                         </Link>
 
-                        <Link to="/profile" style={{height:"50px", width:"40px"}}>
-                            <svg width="50px" height="50px" xmlns="http://www.w3.org/2000/svg">
-                                <image href={profile_button} height="40px" width="40px" />
+                        <Link to="/reservationhistory" style={{height:"2.9rem", width:"2.5rem"}}>
+                            <svg width="2.5rem" height="2.5rem">
+                                <image href={reservation} height="100%" width="100%" />
+                            </svg>
+                        </Link>
+                        <Link to="/profile" style={{height:"2.9rem", width:"2.5rem"}}>
+                            <svg width="2.5rem" height="2.5rem">
+                                <image href={profile_button} height="100%" width="100%" />
                             </svg> 
                         </Link>
 
-                            <svg width="50px" height="50px" xmlns="http://www.w3.org/2000/svg">
-                                <image href={logout_button} height="40px" width="40px" />
+                        <button
+                        style={{borderStyle:"none", backgroundColor:"unset"}}
+                        onClick={Logout}
+                        >
+                            <svg width="2.5rem" height="2.5rem">
+                                <image href={logout_button} height="100%" width="100%" />
                             </svg> 
-
+                        </button>
                     </div>
 
                 </div>
 
-                <div className="types" style={{marginLeft:"110px"}}>
-                    <h3>Types</h3>
+                {isLoading ? 
+                (
+                    <Loader />
+                ):
+                (
+                    <>
+                    <div className="types_suites">
+                    <div>
+                        <svg width="30rem" height="30rem" style={{ borderRadius:"9%", objectFit:"fill"}}>
+                            <image href={hotel_image} height="100%" width="100%" />
+                        </svg>
+                    </div>
+
+                    <div style={{width:"35rem", marginLeft:"10%", marginTop:"2rem"}}>
+                        <h1 style={{fontFamily: 'Cinzel', fontStyle:"oblique", color:"white"}}>Choose your luxurious room</h1>
+                                
+                        <h5 style={{textAlign:"justify",fontFamily: 'Cinzel', color:"white", fontSize:"100%"}}>We pride ourselves on our wide selection of suites to suite your personal needs. Choosing a suite will allow us to provide all our selections per suite chosen.
+                        <br /><br />
+                        We cater for people who are on business trips or single travelors.
+                        <br /><br />
+                        We cater for couples travelling together on vacation, celebrating anniversaries, weddings and so much more.
+                        <br /><br />
+                        We also cater for families travelling on vacation as well. Providing facilities specially for the little ones to express themselves without any restrictions within those spaces.
+                        </h5>
+
+                        <div style={{display:"flex", marginTop:"1rem"}}>
+                            <div>
+                                <button
+                                    type="button"
+                                    name="Read More Button"
+                                    className="browse_buttons"
+                                    onClick={goToAboutUs}
+                                >
+                                    <p className="browse_button_text">Read More</p>
+                                </button>
+                            </div>
+
+                            <div style={{marginLeft:"2rem"}}>
+                                <button
+                                    type="button"
+                                    name="Start Now Button"
+                                    className="browse_buttons"
+                                    onClick={goToAvailableRooms}
+                                >
+                                    <p className="browse_button_text">Book Now</p>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
+                    </>
+                )}
                 
-                <div className="types_suites">
-                    <div>
-
-                        <div style={{display:"flex", flexDirection:"column"}}>
-                            <div className="type_background">
-                                <Link to="/availablerooms" className="links">
-                        
-                                <svg width="70px" height="70px" style={{marginTop:"15px"}} xmlns="http://www.w3.org/2000/svg">
-                                    <image href={single} height="70px" width="70px" />
-                                </svg>
-
-                                <h4>Single</h4>
-                        
-                                </Link>
-                            </div>
-                        </div>
-
-                        <div style={{display:"flex", flexDirection:"column"}}>
-                            <div className="type_background">
-                                <Link to="/availablerooms" className="links">
-
-                                <svg width="70px" height="70px" style={{marginTop:"15px"}} xmlns="http://www.w3.org/2000/svg">
-                                    <image href={couple} height="70px" width="70px" />
-                                </svg>
-
-                                <h4>Couple</h4>
-
-                                </Link>
-                            </div>
-                        </div>
-
-                        <div style={{display:"flex", flexDirection:"column"}}>
-                            <div className="type_background">
-                                <Link to="/availablerooms" className="links">
-                        
-                                <svg width="70px" height="70px" style={{marginTop:"15px"}} xmlns="http://www.w3.org/2000/svg">
-                                    <image href={family} height="70px" width="70px" />
-                                </svg>
-
-                                <h4>Family</h4>
-
-                                </Link>
-                            </div>
-                        </div>
-
-                        </div>
-
-                            <div style={{width:"15rem", marginLeft:"10%", marginTop:"30px"}}>
-                                <p style={{textAlign:"justify",fontFamily: 'Cinzel', fontStyle:"oblique"}}>We pride ourselves on our wide selection of suites to suite your personal needs. Choosing a suite will allow us to provide all our selections per suite chosen.
-                                <br /><br />
-                                We cater for people who are on business trips or single travelors.
-                                <br /><br />
-                                We cater for couples travelling together on vacation, celebrating anniversaries, weddings and so much more.
-                                <br /><br />
-                                W also cater for families travelling on vacation as well. Providing facilities specially for the little ones to express themselves without any restrictions within those spaces.</p>
-                            </div>
-
-                    <div>
-                        <div>
-                            <svg width="550px" height="800px" style={{marginLeft:"0", borderRadius:"9%", objectFit:"fill"}}>
-                                <image href={hotel_image} height="550px" width="690px" />
-                            </svg>
-                        </div>
-                    </div>
-
-                </div>
+                
 
             </div>
         </div>

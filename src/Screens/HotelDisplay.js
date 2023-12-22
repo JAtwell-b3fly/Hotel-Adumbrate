@@ -1,23 +1,34 @@
-import React from "react";
+import React, {useState} from "react";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
+import { getAuth, signOut } from "firebase/auth";
+import { useLocation } from "react-router-dom";
+import { addDoc, collection, getDocs, getDoc, setDoc, doc} from "firebase/firestore";
 
 import hotel_logo from "../images/hotel.png";
 import profile_button from "../images/profile-user.png";
 import wishlist_button from "../images/wishlist.png";
-import single_suite_1 from "../images/Hotel Room Couple 1.png";
-import rating from "../images/4starrating.png";
+import fourRating from "../images/4starrating.png";
+import oneRating from "../images/1starrating.png";
+import twoRating from "../images/2starrating.png";
+import threeRating from "../images/3starrating.png";
+import fiveRating from "../images/5starrating.png";
+import zeroRating from "../images/0starrating.png";
 import wishlist from "../images/heart.png";
 import bed from "../images/bed.png";
 import bath from "../images/bathtub.png";
 import tv from "../images/television.png";
 import ac from "../images/air-conditioner.png";
 import back from "../images/back.png";
-import map_button from "../images/gps.png";
 import logout_button from "../images/log-out.png";
+import contact_us from "../images/telephone.png";
+import about_us from "../images/information-button.png";
 
 const HotelDisplay = () => {
     const history = useHistory();
+    const {state} = useLocation();
+    const selectedRoom = state;
+    console.log("Selected Room: ", selectedRoom);
 
     const goBack = (() => {
         history.push("/availablerooms")
@@ -28,8 +39,18 @@ const HotelDisplay = () => {
     })
 
     const goToReserveForm = (() => {
-        history.push("/reservationform");
+        history.push("/reservationform", selectedRoom);
     })
+
+    const Logout = (() => {
+        const auth = getAuth();
+        signOut(auth).then(() => {
+            history.push("/");
+            alert("You are Logged Out");
+        }).catch((error) => {
+            console.error("You could not be logged out", error);
+        })
+    });
 
     return(
         <div className="HotelDisplay">
@@ -43,8 +64,8 @@ const HotelDisplay = () => {
                         style={{borderStyle:"none", backgroundColor:"unset"}}
                         onClick={goToBrowse}
                         >
-                            <svg width="50px" height="50px" xmlns="http://www.w3.org/2000/svg">
-                                <image href={hotel_logo} height="40px" width="40px" />
+                            <svg width="2.5rem" height="2.5rem">
+                                <image href={hotel_logo} height="100%" width="100%" />
                             </svg>
                         </button>
                     </div>
@@ -55,69 +76,102 @@ const HotelDisplay = () => {
                         name="back_button"
                         style={{borderStyle:"none", backgroundColor:"unset"}}
                         onClick={goBack}>
-                            <svg width="50px" height="50px" xmlns="http://www.w3.org/2000/svg">
-                                <image href={back} height="40px" width="40px" />
+                            <svg width="2.5rem" height="2.5rem">
+                                <image href={back} height="100%" width="100%" />
                             </svg>
                         </button>
                     </div>
 
-                    <div className="display_navbar">
+                    <div className="display_navbar" style={{ marginLeft: "65rem", width: "10.5rem"}}>
 
-                        <Link to ="https://www.google.co.za/maps/place/Basilica+Cathedral+of+Saint+Denis/@48.9354313,2.3572644,17z/data=!4m14!1m7!3m6!1s0x47e66eb312fc18bd:0xf2ffbe58c6ffe57c!2sBasilica+Cathedral+of+Saint+Denis!8m2!3d48.9354278!4d2.3598393!16zL20vMGhrYjg!3m5!1s0x47e66eb312fc18bd:0xf2ffbe58c6ffe57c!8m2!3d48.9354278!4d2.3598393!16zL20vMGhrYjg?entry=ttu"  style={{height:"50px", width:"40px"}}>
-                            <svg width="50px" height="50px" xmlns="http://www.w3.org/2000/svg">
-                                <image href={map_button} height="40px" width="40px" />
+                    <Link to ="/aboutus"  style={{height:"2.9rem", width:"2.5rem"}}>
+                            <svg width="2.5rem" height="2.5rem">
+                                <image href={about_us} height="100%" width="100%" />
                             </svg>
                         </Link>
 
-                        <Link to="/wishlist" style={{height:"50px", width:"40px"}}>
-                            <svg width="50px" height="50px" xmlns="http://www.w3.org/2000/svg">
-                                <image href={wishlist_button} height="40px" width="40px" />
+                        <Link to ="/contactus"  style={{height:"2.9rem", width:"2.5rem"}}>
+                            <svg width="2.5rem" height="2.5rem">
+                                <image href={contact_us} height="100%" width="100%" />
                             </svg>
                         </Link>
 
-                        <Link to="/profile" style={{height:"50px", width:"40px"}}>
-                            <svg width="50px" height="50px" xmlns="http://www.w3.org/2000/svg">
-                                <image href={profile_button} height="40px" width="40px" />
+                        {/*<Link to="/wishlist" style={{height:"2.9rem", width:"2.5rem"}}>
+                            <svg width="2.5rem" height="2.5rem">
+                                <image href={wishlist_button} height="100%" width="100%" />
+                            </svg>
+                        </Link>*/}
+
+                        <Link to="/profile" style={{height:"2.9rem", width:"2.5rem"}}>
+                            <svg width="2.5rem" height="2.5rem">
+                                <image href={profile_button} height="100%" width="100%" />
                             </svg> 
                         </Link>
 
-                            <svg width="50px" height="50px" xmlns="http://www.w3.org/2000/svg">
-                                <image href={logout_button} height="40px" width="40px" />
-                            </svg>
-
+                        <button
+                        style={{borderStyle:"none", backgroundColor:"unset"}}
+                        onClick={Logout}
+                        >
+                            <svg width="2.5rem" height="2.5rem">
+                                <image href={logout_button} height="100%" width="100%" />
+                            </svg> 
+                        </button>
                     </div>
 
                 </div>
                 
                 <div className="displaybox">
-            
+                    {selectedRoom ? (
+                        <>
                     <div className="suite_image_div">
-                        <svg width= "100%" height="100%" className="suite_image" xmlns="http://www.w3.org/2000/svg">
-                            <image href={single_suite_1} height="100%" width= "100%" />
+                        <svg width= "100%" height="100%" className="suite_image">
+                            <image href={selectedRoom.image} height="100%" width= "100%" />
                         </svg> 
                     </div>
 
                     <div className="display_description">
 
                         <div className="Descr_row1">
-                            <div style={{marginTop:"10px"}}>
-                                <h3 className="suite_name">Single Suite</h3>
+                            <div style={{marginTop:"0.5rem"}}>
+                                <h3 className="suite_name" style={{color: "white"}}>{selectedRoom.suite} Suite</h3>
 
                                 <div className="room_number">
-                                    <p className="room_number">Room 125</p>
+                                    <p className="room_number" style={{color: "white"}}>{selectedRoom.roomNumber}</p>
                                 </div>
                             </div>
                             
-                            <div className="rating_wishlist_div">
+                            <div className="rating_wishlist_div"   style={{backgroundColor: "rgb(213, 206, 163, 0.05)", borderRadius: "10rem", paddingRight: "1rem"}}>
                                 <div className="display_rating">
-                                    <svg width= "100%" height="100%" className="display_rating" xmlns="http://www.w3.org/2000/svg">
-                                        <image href={rating} height="100%" width= "100%" />
+                                    <svg width= "100%" height="100%" className="display_rating">
+                                        {selectedRoom.rating === 0 && (
+                                            <image href={zeroRating} height="100%" width="100%" />
+                                        )}
+
+                                        {selectedRoom.rating === 1 && (
+                                            <image href={oneRating} height="100%" width="100%" />
+                                        )}
+
+                                        {selectedRoom.rating === 2 && (
+                                            <image href={twoRating} height="100%" width="100%" />
+                                        )}
+
+                                        {selectedRoom.rating === 3 && (
+                                            <image href={threeRating} height="100%" width="100%" />
+                                        )}
+
+                                        {selectedRoom.rating === 4 && (
+                                            <image href={fourRating} height="100%" width="100%" />
+                                        )}
+
+                                        {selectedRoom.rating === 5 && (
+                                            <image href={fiveRating} height="100%" width="100%" />
+                                        )}
                                     </svg>
                                 </div>
 
                                 <div className="wishlist_button_div">
-                                    <svg width= "100%" height="30px" className="wishlist_button" xmlns="http://www.w3.org/2000/svg">
-                                        <image href={wishlist} height="30px" width= "100%" />
+                                    <svg width= "100%" height="2rem" className="wishlist_button" >
+                                        <image href={wishlist} height="2rem" width= "100%" />
                                     </svg>
                                 </div>
                             </div>
@@ -126,49 +180,46 @@ const HotelDisplay = () => {
 
 
                         <div className="perks">
-                            <svg width= "20px" height="20px" className="perk_image" xmlns="http://www.w3.org/2000/svg">
-                                <image href={bed} height="20px" width= "20px" />
+                            <svg width= "1.5rem" height="1.5rem" className="perk_image">
+                                <image href={bed} height="100%" width= "100%" />
                             </svg>
 
-                            <p className="perk_description">4 Bedroom</p>
+                            <p className="perk_description" style={{fontWeight: "600"}}>{selectedRoom.bed} Bedroom</p>
 
-                            <svg width= "20px" height="20px" className="perk_image" xmlns="http://www.w3.org/2000/svg">
-                                <image href={bath} height="20px" width= "20px" />
+                            <svg width= "1.5rem" height="1.5rem" className="perk_image">
+                                <image href={bath} height="100%" width= "100%" />
                             </svg>
 
-                            <p className="perk_description">3 Bathroom</p>
+                            <p className="perk_description" style={{fontWeight: "600"}}>{selectedRoom.bathroom} Bathroom</p>
 
-                            <svg width= "20px" height="20px" className="perk_image" xmlns="http://www.w3.org/2000/svg">
-                                <image href={tv} height="20px" width= "20px" />
+                            <svg width= "1.5rem" height="1.5rem" className="perk_image">
+                                <image href={tv} height="100%" width= "100%" />
                             </svg>
 
-                            <p className="perk_description">2 Television</p>
+                            <p className="perk_description" style={{fontWeight: "600"}}>{selectedRoom.television} Television</p>
 
-                            <svg width= "20px" height="20px" className="perk_image" xmlns="http://www.w3.org/2000/svg">
-                                <image href={ac} height="20px" width= "20px" />
+                            <svg width= "1.5rem" height="1.5rem" className="perk_image">
+                                <image href={ac} height="100%" width= "100%" />
                             </svg>
 
-                            <p className="perk_description">1 Air Conditioning</p>
+                            <p className="perk_description" style={{fontWeight: "600"}}>{selectedRoom.airConditioning} Air Conditioning</p>
                         </div>
 
-                        <div className="suite_description_div">
-                            <p className="suite_description">This suite is best suited for single travelling people. We cater for those partaking in business trips or vacations. The room is well lighted with
-                                an added balcony for those who light to bask in the sunlight on a gorgeous day. Room service is offered as well.
-                                asdfajsdfkjasdfklajsdfhlkasjdhfakjsdhfkjsdflkajdhfkjadhsfkjasdhfkajsdfhkajsdf
-                                asdkjfahskdjfhaksdjfhalkjdsfhalksdjfhaksjdfhkalsjdfhaklsdjfhalksjdfhlaksjdfhalksjd
-                                dskjfaksljdfhakjsdfhkjasdhfkjasdflksdjfl;akjdsflkasjdflkasdjflkasdjfl;aksdjf;laskdfja
+                        <div className="suite_description_div" style={{color: "white",  overflowY: "scroll", paddingRight: "2rem"}}>
+                            <p className="suite_description" style={{color: "white"}}>
+                                {selectedRoom.longDescription}
                             </p>
                         </div>
 
 
                         <div className="price_reservation">
                             <div className="price">
-                                <p>
+                                <p style={{color: "white"}}>
                                     Price
                                 </p>
-                                <div style={{display:"flex"}}>
-                                    <h2>R 10 000</h2> 
-                                    <p style={{marginTop:"25px"}}>/night</p>
+                                <div style={{display:"flex", width: "12rem"}}>
+                                    <h4 style={{color: "white"}}>R {selectedRoom.price}</h4> 
+                                    <p style={{marginTop:"0.5rem", color: "white"}}>/night</p>
                                 </div>
                                 
                             </div>
@@ -186,9 +237,12 @@ const HotelDisplay = () => {
                         </div>
 
                     </div>
+                    </>) : (<p>No room selected</p>)}
+                    
                 </div>
 
             </div>
+            
         </div>
     )
 };

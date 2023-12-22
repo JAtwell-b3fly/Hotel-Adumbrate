@@ -1,29 +1,80 @@
 import {React, useState} from "react";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
-import {getAuth, createUserWithEmailAndPassword} from "firebase/auth";
+import { db } from "../config/firebase";
+import { collection, addDoc, doc, setDoc } from "firebase/firestore"; 
 
+import {getAuth, createUserWithEmailAndPassword} from "firebase/auth";
 import {auth} from "../config/firebase";
 
 import password_hide from "../images/hidden.png";
 import password_show from "../images/view.png";
 
+import Loader from "./Loader";
+
 const SignUpForm = () => {
 
-    const [fullName, setFullName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [gender, setGender] = useState("");
+    const [regFullName, setRegFullName] = useState("");
+    const [regEmailAddress, setRegEmailAddress] = useState("");
+    const [regGender, setRegGender] = useState("Female");
+    const [regPassword, setRegPassword] = useState("");
+    const [regPhysicalAddress, setRegPhysicalAddress] = useState("");
+    const [role, setRole] = useState("user");
+    const [isLoading, setIsLoading] = useState(false);
 
     const history = useHistory();
 
-    const register = (() => {
-        createUserWithEmailAndPassword(auth, email, password).then(() => {
-            alert("Registered Successfully");
-            history.push("/login");
-        }).catch((error) => {
-            console.log(error.message);
+    const register = (async() => {
+        setIsLoading(true);
+
+        createUserWithEmailAndPassword(auth, regEmailAddress, regPassword).then(async() => {
+                try {
+                    const auth = getAuth();
+                    const user = auth.currentUser;
+                    const userId = user.uid;
+
+                    if (user && user.uid) {
+                        const userDocRef = doc(db, "users", regEmailAddress);
+                        await setDoc(userDocRef, {
+                            fullName: regFullName,
+                            emailAddress: regEmailAddress,
+                            gender: regGender,
+                            physicalAddress: regPhysicalAddress,
+                            userID: userId, 
+                            role: "user",
+                        })
+                        setIsLoading(false);
+                        alert("Registration Successful");
+                        history.push("/login");
+                    }
+                } catch (error) {
+                    console.error(error.message);
+                }
+
+                /*const docRef = await addDoc(collection(db, "users"), {
+                  fullName: regFullName,
+                  emailAddress: regEmailAddress,
+                  gender: regGender,
+                  physicalAddress: regPhysicalAddress,
+                  userID: userId, 
+                  role: "user",
+                }).then((docRef) => {
+                    alert("Registration Successful")
+                    console.log("Document written with ID: ", docRef.id);
+                    history.push("/login");
+                }).catch((error) => {
+                    console.log(error.message);
+                }) */
+            
+                setRegFullName("");
+                setRegEmailAddress("");
+                setRegGender("");
+                setRegPassword("");
+                setRegPhysicalAddress("");
+                setRole("");
+
         })
+        
     })
 
     const [showPassword, setShowPassword] = useState(false);
@@ -34,40 +85,45 @@ const SignUpForm = () => {
 
     return(
         <div>
-            <div className="registration_box">
+            <form onSubmit={register}>
+                {isLoading ?
+                (
+                <Loader />
+                )
+                :
+                (
+                    <>
+                    <div className="registration_box">
                 <div className="signupform">
             
-                    <label className="reg_label">Full Name</label>
+                    <label className="reg_label"   style={{color: "white", marginLeft: "10rem"}}>Full Name</label>
                     <input
-                        name="fullName"
+                        name="regFullName"
                         type="text"
                         className="reg_input"
                         placeholder="Full Name"
-                        value={fullName}
-                        onChange={(event) => setFullName(event.target.value)}
+                        onChange={(event) => setRegFullName(event.target.value)}
                     />
 
-                    <label className="reg_label" style={{marginLeft:"150px"}}>Email Address</label>
+                    <label className="reg_label" style={{marginLeft:"9.2rem", color: "white"}}>Email Address</label>
                     <input
-                        name="emailAddress"
+                        name="regEmailAddress"
                         type="email"
                         className="reg_input"
                         placeholder="Email Address"
-                        value={email}
-                        onChange={(event) => setEmail(event.target.value)}
+                        onChange={(event) => setRegEmailAddress(event.target.value)}
                     />         
             
-                    <label className="reg_label">Password</label>
+                    <label className="reg_label"   style={{color: "white", marginLeft: "10rem"}}>Password</label>
 
                     <div>
 
                         <input
-                            name="password"
+                            name="regPassword"
                             type={showPassword? "text" : "password"}
                             className="reg_input"
                             placeholder="Password"
-                            value={password}
-                            onChange={(event) => setPassword(event.target.value)}
+                            onChange={(event) => setRegPassword(event.target.value)}
                         />
 
                         <button
@@ -78,50 +134,61 @@ const SignUpForm = () => {
                         >
                             {showPassword? 
                                 <>
-                                    <svg width="40px" height="40px" xmlns="http://www.w3.org/2000/svg">
-                                        <image href={password_hide} height="50px" width="30px" />
+                                    <svg width="2rem" height="2rem">
+                                        <image href={password_hide} height="100%" width="100%" />
                                     </svg>
                                 </>
                             :
                                 <>
-                                    <svg width="40px" height="40px" xmlns="http://www.w3.org/2000/svg">
-                                        <image href={password_show} height="50px" width="30px" />
+                                    <svg width="2rem" height="2rem">
+                                        <image href={password_show} height="100%" width="100%" />
                                     </svg>
                                 </>
                             }    
                         </button>
                     </div>
 
-                    <label className="reg_label">Gender</label>
+                    <label className="reg_label"   style={{color: "white"}}>Gender</label>
                     <select
-                        name="gender"
-                        className="reg_input"
+                        name="regGender"
+                        onChange={(event) => setRegGender(event.target.value)}
                         defaultValue="Female"
-                        value={gender}
-                        onChange={(event) => setGender(event.target.value)}
+                        className="reg_input"
                     >
                         <option value="Female">Female</option>
                         <option value="Male">Male</option>
                     </select>
+
+                    <label className="reg_label" style={{marginLeft:"8.4rem", color: "white"}}>Physical Address</label>
+                    <input
+                        name="regPhysicalAddress"
+                        type="text"
+                        className="reg_input"
+                        placeholder="Physical Address"
+                        onChange={(event) => setRegPhysicalAddress(event.target.value)}
+                    />
+                    
                 </div>
             </div>
 
             <div>
-                <div style={{marginLeft:"820px", marginTop:"50px"}}>
+                <div style={{marginLeft:"45rem", marginTop:"1rem"}}>
                     <button type="button"
                     name="sign_up"
                     className="login_button"
                     onClick={register}
                     >
-                         <p className="reserve_button_text">Sign Up</p> 
+                         Sign Up
                     </button>
                 </div>
 
-                <div className="login_link" style={{marginLeft:"790px"}}>
-                    <h6>Have An Account? </h6><div style={{marginLeft:"10px"}}><Link to="/login"  style={{fontSize:"26px", color:"white"}}><h6>Login</h6></Link></div>
+                <div className="login_link" style={{marginLeft:"42rem"}}>
+                    <h6 style={{backgroundColor: "rgba(0,0,0,0.3)"}}>Have An Account? </h6><div style={{marginLeft:"1rem"}}><Link to="/login"  style={{fontSize:"110%", color:"white"}}><h6 style={{backgroundColor: "rgba(0,0,0,0.3)"}}>Login</h6></Link></div>
                 </div>
             </div>
-
+                    </>
+                )}
+            </form>
         </div>
     )
 };

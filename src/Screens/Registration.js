@@ -15,8 +15,8 @@ const Registration = () => {
  
                     <div className="hotel_logo">
                         <Link to="/">
-                        <svg width="50px" height="50px" xmlns="http://www.w3.org/2000/svg">
-                            <image href={hotel_logo} height="40px" width="40px" />
+                        <svg width="2.5rem" height="2.5rem">
+                            <image href={hotel_logo} height="100%" width="100%" />
                         </svg>
                         </Link>
                     </div>
