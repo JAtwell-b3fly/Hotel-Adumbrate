@@ -4,8 +4,6 @@ import { useHistory } from "react-router-dom";
 import {collection, getDocs} from "firebase/firestore";
 import { auth, db } from "../config/firebase"; 
 import { signInWithEmailAndPassword } from "firebase/auth";
-import * as Yup from "yup";
-import { Formik, Field, ErrorMessage, Form} from "formik";
 
 import password_hide from "../images/hidden.png";
 import password_show from "../images/view.png";
@@ -14,14 +12,32 @@ import Loader from "./Loader";
 
 const LoginForm = () => {
 
-    //const [loginEmailAddress, setLoginEmailAddress] = useState("");
-    //const [loginPassword, setLoginPassword] = useState("");
+    const [loginEmailAddress, setLoginEmailAddress] = useState("");
+    const [loginPassword, setLoginPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
-    /*const handleLogin = async() => {
+    const formValidation = () => {
+        if (!loginEmailAddress || !/^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/.test(loginEmailAddress) || !(loginEmailAddress.endsWith('.co.za') || loginEmailAddress.endsWith('.org.za') || loginEmailAddress.endsWith('.com'))) {
+            alert("Email Address is required, must contain the @ symbol and end it either three ways: .co.za, .org.za or .com")
+            return false;
+        }
+
+        else if (!loginPassword || loginPassword.length > 6 || !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(loginPassword)){
+            alert("Password is required and must be at least 6 characters, containing special characters, lowercase and uppercase characters and numbers")
+            return false;
+        }
+    
+        return true;
+    }
+
+    const handleLogin = async() => {
         //Sign in with email and password
        
         try {
+            if (!formValidation()) {
+                setIsLoading(false);
+                return;
+            }
             setIsLoading(true);
 
             //Sign in with email and password
@@ -46,10 +62,14 @@ const LoginForm = () => {
                 }
             })
             setIsLoading(false);
+
+            //Reset Form Inputs
+            setLoginEmailAddress("");
+            setLoginPassword("");
         } catch (error) {
             console.log("Error during login: ", error.message); 
         }
-    };*/
+    };
 
     const history = useHistory();
 
@@ -63,76 +83,31 @@ const LoginForm = () => {
         
         <div> 
             { isLoading && <Loader />}
-            <Formik
-                enableReinitialize={true}
-                initialValues={{loginEmailAddress: "", loginPassword: ""}}
-                validationSchema={Yup.object().shape({
-                    loginEmailAddress: Yup.string().email("Invalid email address").required("Email address is required"),
-                    loginPassword: Yup.string().required("Password is required"),
-                })}
-                onSubmit={async (values) => {
-                    console.log("Form submitted:", values);
-                    try {
-                        //Loader should show when form submitting
-                        setIsLoading(true);
-                        //Sign in with email and password
-                        const userCredential = await signInWithEmailAndPassword(auth, values.loginEmailAddress, values.loginPassword);
-                        const user = userCredential.user;
-
-                        //Get user data from Firestore based on the email address
-                        const querySnapShot = await getDocs(collection(db, "users"));
-
-                        querySnapShot.forEach((doc) => {
-                            if (doc.data().emailAddress === values.loginEmailAddress) {
-                                const role = doc.data().role;
-
-                                //Navigate to the appropriate screen based on the user's role
-                                if (role === "user") {
-                                    history.push("/browse");
-                                    alert("User Login Successful");
-                                } else if (role === "admin") {
-                                    history.push("/adminhome");
-                                    alert("Admin Login Successful");
-                                }
-                            }
-                        });
-                        setIsLoading(false);
-                    } catch (error) {
-                        console.log("Error during login: ", error.message);
-                        setIsLoading(false);
-                    } finally {
-                        setIsLoading(false);
-                    }
-                }}
-            >
+            <form onSubmit={handleLogin}>
             
-            {() => (
-                <>
-
                     <div className="login_box">
-                <Form className="loginform">
+                <div className="loginform">
                 
             
                     <div style={{display: "flex", flexDirection:"column"}}>
                     <label className="login_label" style={{color: "white"}}>Email Address</label>
-                    <Field
+                    <input
                         name="loginEmailAddress"
                         type="email"
                         className="logreg_input"
                         placeholder="Email Address"
-                        //onChange={(event) => setLoginEmailAddress(event.target.value)}
-                    />
-                    <ErrorMessage name="loginEmailAddress" component="div" className="error-message" />         
+                        onChange={(event) => setLoginEmailAddress(event.target.value)}
+                    />      
             
                     <label className="login_label"  style={{color: "white"}}>Password</label>
 
                     <div style={{display:"flex"}}>
-                        <Field
+                        <input
                             name="loginPassword"
                             type={showPassword? "text" :"password"}
                             className="logreg_input"
                             placeholder="Password"
-                            //onChange={(event) => setLoginPassword(event.target.value)}
+                            onChange={(event) => setLoginPassword(event.target.value)}
                         />
 
                         <button
@@ -156,10 +131,9 @@ const LoginForm = () => {
                             }    
                         </button>
                     </div>
-                    <ErrorMessage name="loginPassword" component="div" className="error-message" />
                     </div>
                     
-                </Form>
+                </div>
             </div>
 
             <div style={{marginBottom:"0rem", marginTop:"1rem"}}>
@@ -173,7 +147,7 @@ const LoginForm = () => {
                     name="login"
                     className="login_button"
                     disabled={isLoading}
-                    //onClick={handleLogin}
+                    onClick={handleLogin}
                     >
                     Login
                     </button>
@@ -185,10 +159,7 @@ const LoginForm = () => {
                     <h6 style={{backgroundColor: "rgba(0,0,0,0.4)"}}>Don't Have An Account? </h6><div style={{marginLeft:"1rem"}}><Link to="/signup"  style={{fontSize:"110%", color:"white"}}><h6 style={{backgroundColor: "rgba(0,0,0,0.4)"}}>Sign Up</h6></Link></div>
                 </div>
             </div>
-
-                </>
-            )}
-            </Formik>
+            </form>
         </div>
     )
 };

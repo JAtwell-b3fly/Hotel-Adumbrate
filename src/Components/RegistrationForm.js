@@ -24,7 +24,43 @@ const SignUpForm = () => {
 
     const history = useHistory();
 
+    const formValidation = () => {
+
+        if (!regFullName || regFullName.length > 50) {
+            alert("Full name is required and must be shorter than 50 characters")
+            return false;
+        }
+
+        else if (!regEmailAddress || !/^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/.test(regEmailAddress) || !(regEmailAddress.endsWith('.co.za') || regEmailAddress.endsWith('.org.za') || regEmailAddress.endsWith('.com'))) {
+            alert("Email Address is required, must contain the @ symbol and end it either three ways: .co.za, .org.za or .com")
+            return false;
+        }
+
+        else if (!regPhysicalAddress || regPhysicalAddress.length > 50) {
+            alert("Physical Address is required and must be shorter than 50 characters")
+            return false;
+        }
+
+        else if (!["Male", "Female"].includes(regGender)) {
+            alert("Please choose a gender")
+            return false;
+        }
+
+        else if (!regPassword || regPassword.length > 6 || !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(regPassword)){
+            alert("Password is required and must be at least 6 characters, containing special characters, lowercase and uppercase characters and numbers")
+            return false;
+        }
+    
+        return true;
+    }
+
     const register = (async() => {
+
+        if (!formValidation()) {
+            setIsLoading(false);
+            return;
+        }
+
         setIsLoading(true);
 
         createUserWithEmailAndPassword(auth, regEmailAddress, regPassword).then(async() => {
@@ -50,29 +86,14 @@ const SignUpForm = () => {
                 } catch (error) {
                     console.error(error.message);
                 }
-
-                /*const docRef = await addDoc(collection(db, "users"), {
-                  fullName: regFullName,
-                  emailAddress: regEmailAddress,
-                  gender: regGender,
-                  physicalAddress: regPhysicalAddress,
-                  userID: userId, 
-                  role: "user",
-                }).then((docRef) => {
-                    alert("Registration Successful")
-                    console.log("Document written with ID: ", docRef.id);
-                    history.push("/login");
-                }).catch((error) => {
-                    console.log(error.message);
-                }) */
             
+                //Reset Form Inputs
                 setRegFullName("");
                 setRegEmailAddress("");
                 setRegGender("");
                 setRegPassword("");
                 setRegPhysicalAddress("");
                 setRole("");
-
         })
         
     })
