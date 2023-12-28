@@ -46,8 +46,9 @@ const SignUpForm = () => {
             return false;
         }
 
-        else if (!regPassword || regPassword.length > 6 || !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(regPassword)){
-            alert("Password is required and must be at least 6 characters, containing special characters, lowercase and uppercase characters and numbers")
+        else if (!regPassword || regPassword.length < 6 || !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(regPassword)) {
+            console.log("Password validation failed");
+            alert("Password is required and must be at least 6 characters, containing special characters, lowercase and uppercase characters and numbers");
             return false;
         }
     
@@ -76,6 +77,7 @@ const SignUpForm = () => {
                             emailAddress: regEmailAddress,
                             gender: regGender,
                             physicalAddress: regPhysicalAddress,
+                            password: regPassword,
                             userID: userId, 
                             role: "user",
                         })
@@ -194,7 +196,7 @@ const SignUpForm = () => {
 
             <div>
                 <div style={{marginLeft:"45rem", marginTop:"1rem"}}>
-                    <button type="button"
+                    <button type="submit"
                     name="sign_up"
                     className="login_button"
                     onClick={register}

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
 import {auth, db} from "../config/firebase";
-import {collection, getDocs} from "firebase/firestore";
+import {collection, getDocs, doc, docs} from "firebase/firestore";
 
 import reservation from "../images/tasks-completed.png";
 import hotel_logo from "../images/hotel.png";
@@ -42,25 +42,37 @@ const ReservationHistory = () => {
         try {
             const auth = getAuth();
             const user = auth.currentUser;
-            const userUID = user.uid;
             const userCurrentUserEmail = user.email;
 
             const querySnapShot = await getDocs(collection(db, "reservations"));
+            const userReservations = [];
+
             querySnapShot.forEach((doc) => {
-                if (doc.data().reservationInformation.emailAddress === userCurrentUserEmail) {
-                    setReservations(...reservations, doc.data());
+                const reservationInfo = doc.data()?.reservationInformation;
+                if (reservationInfo && reservationInfo.email === userCurrentUserEmail) {
+                    userReservations.push(reservationInfo);
                 }
-            })
+            });
+
+            console.log("Current User:", user);
+            console.log("Query Snapshot:", querySnapShot.docs);
+            console.log("User Email:", userCurrentUserEmail);
+            console.log("User Reservations:", userReservations);
+
+            setReservations(userReservations);
         } catch (error) {
             console.error("Error in fetching reservations history");
         }
         setIsLoading(false);
     }
 
-    useEffect (() => {
+    useEffect(() => {
         getReservations();
-        console.log("Reservations History: ", reservations);
     }, [])
+
+    useEffect(() => {
+        console.log("Reservation History: ", reservations)
+    }, [reservations])
 
     return(
         <div className="Profile">
@@ -132,46 +144,54 @@ const ReservationHistory = () => {
                         </div>
                     </div>
 
-                    <div style={{display: "flex", flexDirection: "row", flex: ""}}>
+                    <div style={{overflowY: "auto", overflowX: "auto", width: "100%", height: "28rem"}}>
+                        {reservations.map((reservation) => (
+                            <>
+                             <React.Fragment key={reservation.id}>
+                             <div style={{display: "flex", flexDirection: "row"}}>
                         <div style={{marginLeft: "2rem", height: "27.5rem", width: "30rem"}}>
                             <svg className="reservationHistoryImg">
-                                <image href = {hotel_img} width="100%" height="100%" />
+                                <image href = {reservation.image} width="100%" height="100%" />
                             </svg>
                         </div>
 
                         <div style={{justifyContent: "left", margin: "1rem"}}>
-                            <h5 style={{color: "white", fontFamily: "Cinzel", marginBottom: "1rem"}}>Reference Number: RN9846876987</h5>
+                            <h5 style={{color: "white", fontFamily: "Cinzel", marginBottom: "1rem"}}>Reference Number: {reservation.referenceNumber}</h5>
                             <h5  style={{color: "white", fontFamily: "Cinzel", fontWeight: "bold"}}>Dates:</h5>
                             <div style={{display: "flex", marginTop: "1rem"}}>
-                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "5rem"}}>Arrival Date: 2023-12-01</p>
-                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "5rem"}}>Arrival Time: 10:17</p>
+                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "5rem"}}>Arrival Date: {reservation.arrivalDate}</p>
+                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "5rem"}}>Arrival Time: {reservation.arrivalTime}</p>
                             </div>
                             <div style={{display: "flex"}}>
-                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "4rem"}}>Departure Date: 2023-12-12</p>
-                            <p style={{color: "white", fontFamily: "Cinzel"}}>Departure Time: 13:50</p>
+                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "4rem"}}>Departure Date: {reservation.departureDate}</p>
+                            <p style={{color: "white", fontFamily: "Cinzel"}}>Departure Time: {reservation.depatureTime}</p>
                             </div>
                             <div style={{display: "flex"}}>
-                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "4rem"}}>Date when reservation was made: 2023-11-20</p>
+                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "4rem"}}>Date when reservation was made: {reservation.reservationMadeDate}</p>
                             </div>
                             <h5 style={{color: "white", fontFamily: "Cintel", fontWeight: "bold", marginBottom:"1rem"}}>Summary:</h5>
                             <div style={{display: "flex"}}>
-                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "9.5rem"}}>Price: R 14000</p>
-                            <p style={{color: "white", fontFamily: "Cinzel"}}>Number of Days: 12</p>
+                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "9.5rem"}}>Price: R {reservation.price}</p>
+                            <p style={{color: "white", fontFamily: "Cinzel"}}>Number of Days: {reservation.numberOfDays}</p>
                             </div>
                             <div style={{display: "flex"}}>
-                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "7.6rem"}}>Suite Type: Couple</p>
-                            <p style={{color: "white", fontFamily: "Cinzel"}}>Room Number: Room 202</p>
+                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "7.6rem"}}>Suite Type: {reservation.suite}</p>
+                            <p style={{color: "white", fontFamily: "Cinzel"}}>Room Number: {reservation.roomNumber}</p>
                             </div>
                             <div style={{display: "flex"}}>
-                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "7.2rem"}}>Number of Adults: 2</p>
-                            <p style={{color: "white", fontFamily: "Cinzel"}}>Number of Children: 0</p>
+                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "7.2rem"}}>Number of Adults: {reservation.numberOfAdults}</p>
+                            <p style={{color: "white", fontFamily: "Cinzel"}}>Number of Children: {reservation.numberOfChildren}</p>
                             </div>
                             <div style={{display: "flex"}}>
-                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "2rem", width: "100%"}}>Name: Preston Magakwe</p>
-                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "2rem", width: "100%"}}>Email Address: prestonmagakwe18@gmail.com</p>
-                            <p style={{color: "white", fontFamily: "Cinzel", width: "100%", marginRight: "2rem"}}>Physical Address: 25 Anderson Road</p>
+                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "2rem", width: "100%"}}>Name: {reservation.name}</p>
+                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "2rem", width: "100%"}}>Email Address: {reservation.email}</p>
+                            <p style={{color: "white", fontFamily: "Cinzel", width: "100%", marginRight: "2rem"}}>Physical Address: {reservation.physicalAddress}</p>
                             </div>
                         </div>
+                        </div>
+                             </React.Fragment>
+                            </>
+                        ))}
                     </div>
                 </div>
 

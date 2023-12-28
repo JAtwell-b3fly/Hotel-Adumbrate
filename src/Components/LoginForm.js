@@ -22,10 +22,10 @@ const LoginForm = () => {
             return false;
         }
 
-        else if (!loginPassword || loginPassword.length > 6 || !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(loginPassword)){
+        /*else if (!loginPassword || loginPassword.length > 6 || !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(loginPassword)){
             alert("Password is required and must be at least 6 characters, containing special characters, lowercase and uppercase characters and numbers")
             return false;
-        }
+        }*/
     
         return true;
     }
@@ -35,7 +35,7 @@ const LoginForm = () => {
        
         try {
             if (!formValidation()) {
-                setIsLoading(false);
+                //setIsLoading(false);
                 return;
             }
             setIsLoading(true);
@@ -82,11 +82,12 @@ const LoginForm = () => {
     return(
         
         <div> 
-            { isLoading && <Loader />}
             <form onSubmit={handleLogin}>
             
                     <div className="login_box">
-                <div className="loginform">
+                    {isLoading && <Loader style={{justifyContent: "center"}} /> }
+                    
+                {!isLoading && (<div className="loginform">
                 
             
                     <div style={{display: "flex", flexDirection:"column"}}>
@@ -133,7 +134,7 @@ const LoginForm = () => {
                     </div>
                     </div>
                     
-                </div>
+                </div>)}
             </div>
 
             <div style={{marginBottom:"0rem", marginTop:"1rem"}}>
