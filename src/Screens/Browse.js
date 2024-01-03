@@ -7,7 +7,7 @@ import { doc, setDoc, getDoc } from "firebase/firestore";
 
 import hotel_logo from "../images/hotel.png";
 import profile_button from "../images/profile-user.png";
-import reservation from "../images/waiting-list.png";
+import reservation from "../images/tasks-completed.png";
 import hotel_image from "../images/Hotel Room Single 4.png";
 import about_us from "../images/information-button.png";
 import logout_button from "../images/log-out.png";
@@ -95,7 +95,7 @@ const Browse = () => {
                         <h3  className="browse_welcome" style={{color: "white"}}>Hi {userInfo.fullName}, Let us help you find your preferred stay</h3>
                     </div>
 
-                    <div className="display_navbar" style={{marginLeft:"46rem", width: "10.5rem"}}>
+                    <div className="display_navbar" style={{marginLeft:"46rem", width: "12.8rem"}}>
 
                         <Link to ="/aboutus"  style={{height:"2.9rem", width:"2.5rem"}}>
                             <svg width="2.5rem" height="2.5rem">

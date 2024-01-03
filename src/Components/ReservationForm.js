@@ -3,38 +3,13 @@ import { useHistory } from "react-router-dom";
 import { db } from "../config/firebase"; 
 import {doc, getDoc, addDoc, collection } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-import { useLocation } from "react-router-dom";
 
-const ReservationForm = () => {
+const ReservationForm = ({selectedRoom}) => {
 
     const history = useHistory();
-    const {state} = useLocation();
-    const selectedRoom = state;
     const auth = getAuth();
     const user = auth.currentUser;
     const [userInfo, setUserInfo] = useState([]);
-
-    useEffect(() => {
-        pullUserInfo();
-    })
-
-    const pullUserInfo = async() => {
-         if (user) {
-            try {
-                const userDocRef = doc(db, "users", user.email);
-                const docSnap = await getDoc(userDocRef);
-
-                if (docSnap.exists()) {
-                    const userData = docSnap.data();
-                    setUserInfo(userData);
-                } else {
-                    console.log("No such document exists")
-                }
-            } catch (error) {
-                console.error("Error the user information: ", error.message)
-            }
-        }
-    }
 
     const [reserveName, setReserveName] = useState(userInfo.fullName);
     const [reserveEmail, setReserveEmail] = useState(userInfo.emailAddress);
@@ -48,53 +23,99 @@ const ReservationForm = () => {
     const [arrivalDate, setArrivalDate] = useState("");
     const [arrivalTime, setArrivalTime] = useState("");
     const [departureDate, setDepartureDate] = useState("");
-    const [departureTime, setDepartureTime] = useState("");
+    const [departureTime, setDepartureTime] = useState(""); 
 
     useEffect(() => {
-        setReservationInformation({
-            userEmail: user.email,
-            userUID: user.uid,
-            reservationMadeDate: getTodayDate(),
-            referenceNumber: getReferenceNumber(),
-            name: userInfo.fullName,
-            email: userInfo.emailAddress,
-            physicalAddress: userInfo.physicalAddress,
-            specialRequests: specialRequests,
-            hotelSuite: hotelSuite,
-            roomNumber: roomNumber,
-            numberOfDays: numberOfDays,
-            numberOfAdults: numberOfAdults,
-            numberOfChildren: numberOfChildren,
-            arrivalDate: arrivalDate,
-            arrivalTime: arrivalTime,
-            departureDate: departureDate,
-            depatureTime: departureTime,
-            airConditioning : selectedRoom.airConditioning,
-            balcony: selectedRoom.balcony,
-            bathroom: selectedRoom.bathroom,
-            bed: selectedRoom.bed,
-            fireplace: selectedRoom.fireplace,
-            floorLevel: selectedRoom.floorLevel,
-            hasAirConditioning: selectedRoom.hasAirConditioning,
-            hasTelevision: selectedRoom.hasTelevision,
-            image: selectedRoom.image,
-            longDescription: selectedRoom.longDescription,
-            shortDescription: selectedRoom.shortDescription,
-            madeAvailable: selectedRoom.madeAvailable,
-            roomName: selectedRoom.name,
-            price: selectedRoom.price * numberOfDays,
-            rating: selectedRoom.rating,
-            suite: selectedRoom.suite,
-            television: selectedRoom.television,
-            wifi: selectedRoom.wifi,
-        })
-    })
+        const fetchData = async () => {
+          if (user) {
+            try {
+              const userDocRef = doc(db, "users", user.email);
+              const docSnap = await getDoc(userDocRef);
+    
+              if (docSnap.exists()) {
+                const userData = docSnap.data();
+                setUserInfo(userData);
+                setReserveName(userData.fullName);
+                setReserveEmail(userData.emailAddress);
+                setReservePhysicalAddress(userData.physicalAddress);
+              } else {
+                console.log("No such document exists");
+              }
+            } catch (error) {
+              console.error("Error fetching user information: ", error.message);
+            }
+          }
+        };
+    
+        fetchData();
+      }, [user]);
+
     const [reservationInformation, setReservationInformation] = useState({})
 
-    const goToUserReservation = (() => {
-        history.push("/user-Reservation", reservationInformation, selectedRoom)
-        alert("Reservation Information Added")
-    })
+        useEffect(() => {
+            // Calculate and set reservation information based on state variables
+            if (user.email && user.uid && userInfo.fullName && userInfo.emailAddress && userInfo.physicalAddress) {
+                setReservationInformation(prevState => {
+                    const calculatedInformation = {
+                        userEmail: user.email,
+                        userUID: user.uid,
+                        reservationMadeDate: getTodayDate(),
+                        referenceNumber: getReferenceNumber(),
+                        name: userInfo.fullName,
+                        email: userInfo.emailAddress,
+                        physicalAddress: userInfo.physicalAddress,
+                        specialRequests: specialRequests,
+                        hotelSuite: hotelSuite,
+                        roomNumber: roomNumber,
+                        numberOfDays: numberOfDays,
+                        numberOfAdults: numberOfAdults,
+                        numberOfChildren: numberOfChildren,
+                        arrivalDate: arrivalDate,
+                        arrivalTime: arrivalTime,
+                        departureDate: departureDate,
+                        depatureTime: departureTime,
+                        airConditioning : selectedRoom.airConditioning,
+                        balcony: selectedRoom.balcony,
+                        bathroom: selectedRoom.bathroom,
+                        bed: selectedRoom.bed,
+                        fireplace: selectedRoom.fireplace,
+                        floorLevel: selectedRoom.floorLevel,
+                        hasAirConditioning: selectedRoom.hasAirConditioning,
+                        hasTelevision: selectedRoom.hasTelevision,
+                        image: selectedRoom.image,
+                        longDescription: selectedRoom.longDescription,
+                        shortDescription: selectedRoom.shortDescription,
+                        madeAvailable: selectedRoom.madeAvailable,
+                        roomName: selectedRoom.name,
+                        price: selectedRoom.price,
+                        priceCalculated: selectedRoom.price * numberOfDays,
+                        rating: selectedRoom.rating,
+                        suite: selectedRoom.suite,
+                        television: selectedRoom.television,
+                        wifi: selectedRoom.wifi,
+                      };
+                      
+                      return calculatedInformation
+                })
+            }
+          }, [
+            user.email,
+            user.uid,
+            userInfo.fullName,
+            userInfo.emailAddress,
+            userInfo.physicalAddress,
+            specialRequests,
+            hotelSuite,
+            roomNumber,
+            numberOfDays,
+            numberOfAdults,
+            numberOfChildren,
+            arrivalDate,
+            arrivalTime,
+            departureDate,
+            departureTime,
+            selectedRoom,
+          ]);
 
     //Function to calculate the number of days spent at the hotel
     function calculateStayDuration(arrivalDate, departureDate) {
@@ -117,7 +138,7 @@ const ReservationForm = () => {
         //Extract the components of the date
         const year = today.getFullYear();
         const month = today.getMonth() + 1;
-        const day = today.getDay();
+        const day = today.getDate();
 
         //Create a string in the format "YYY-MM-DD"
         const formattedDate = `${year}-${month < 10 ? '0' : ""}${month}-${day < 10 ? '0' : ''}${day}`;
@@ -136,15 +157,51 @@ const ReservationForm = () => {
     }
 
     const handleArrivalDate = (event) => {
-        setArrivalDate(event.target.value);
+        const selectedDate = new Date(event.target.value);
+        const currentDate = new Date();
+        
+        if (selectedDate < currentDate) {
+            console.error("Arrival Date has to be a future date from today")
+            alert("Arrival Date has to be a future date from today")
+        } else {
+            setArrivalDate(event.target.value);
+        }
     }
 
     const handleDepartureDate = (event) => {
-        setDepartureDate(event.target.value);
+        const selectedDate = new Date(event.target.value);
+        const arrivaleDateObj = new Date(arrivalDate);
+
+        if (selectedDate < arrivaleDateObj) {
+            console.error("Departure Date has to be a future date from the Arrival Date")
+            alert("Departure Date has to be a future date from the Arrival Date")
+        } else {
+            setDepartureDate(event.target.value)
+        }
+    }
+
+    const handleArrivalTime = (event) => {
+        const arrivalTime = event.target.value;
+        console.log("Selected Arrival Date:", event.target.value);
+        if (arrivalTime.trim() === "") {
+            console.error("Arrival Time is required")
+            alert("Arrival Time is required")
+        } else {
+            setArrivalTime(arrivalTime);
+        }
+    }
+
+    const handleDepartureTime = (event) => {
+        const departureTime = event.target.value;
+        if(departureTime.trim() === "") {
+            console.error("Departure Time is required");
+            alert("Departure Time is required");
+        } else {
+            setDepartureTime(departureTime);
+        }
     }
 
     useEffect(() => {
-
         //Check if both arrivalDate and departureDate have values
         if (arrivalDate && departureDate) {
             //Calculate stay duration and update the state
@@ -152,6 +209,49 @@ const ReservationForm = () => {
             setNumberOfDays(days);
         }
     }, [arrivalDate, departureDate]);
+
+    const handleNumberOfAdults = (event) => {
+        const newValueOfAdults = parseInt(event.target.value, 10);
+        if (!isNaN(newValueOfAdults) && newValueOfAdults > 0 && newValueOfAdults <= 4) {
+            setNumberOfAdults(newValueOfAdults);
+        } else {
+            console.error("Adults number should be between 0 and 5")
+            alert("Adults number should be between 0 and 5")
+        }
+    }
+
+    const handleNumberOfChildren = (event) => {
+        const newValueChildren = parseInt(event.target.value, 10);
+        if (!isNaN(newValueChildren) && newValueChildren >= 0 && newValueChildren <= 3) {
+            setNumberOfChildren(newValueChildren)
+        } else {
+            console.error("Children number should be between 0 and 3")
+            alert("Children number should be between 0 and 3")
+        }
+    }
+
+    const goToUserReservation = (() => {
+
+        history.push("/user-Reservation", reservationInformation, selectedRoom)
+        alert("Reservation Information Added")
+    })
+
+    const handleProceedButtonClick = () => {
+        if (
+            !reserveEmail ||
+            !arrivalDate ||
+            !departureDate ||
+            !arrivalTime ||
+            !departureTime ||
+            numberOfAdults === 0 ||
+            arrivalDate >= departureDate
+        ) {
+            console.error("Cannot proceed. Please correct the form information")
+            alert("Cannot proceed. Please correct the form information")
+        } else {
+            goToUserReservation();
+        }
+    }
         
 
     return(
@@ -235,11 +335,7 @@ const ReservationForm = () => {
                         placeholder="0"
                         className="reservation_input"
                         value={numberOfAdults}
-                        onChange={(event) => {
-                            const newValueOfAdults = event.target.value;
-                            if (!isNaN(newValueOfAdults) && newValueOfAdults >= 0 && newValueOfAdults <= 5)
-                            setNumberOfAdults(newValueOfAdults)
-                        }}
+                        onChange={handleNumberOfAdults}
                         style={{width:"11rem"}}
                         type="number"
                         defaultValue={0}
@@ -271,13 +367,7 @@ const ReservationForm = () => {
                         placeholder="0"
                         className="reservation_input"
                         value={numberOfChildren}
-                        onChange={(event) => {
-                            const newValueChildren = event.target.value;
-
-                            if(!NaN(newValueChildren) && newValueChildren >= 0 && newValueChildren <= 5) {
-                                setNumberOfChildren(newValueChildren);
-                            }
-                        }}
+                        onChange={handleNumberOfChildren}
                         style={{width:"11rem"}}
                         type="number"
                         defaultValue={0}
@@ -323,7 +413,7 @@ const ReservationForm = () => {
                         placeholder="hh:mm"
                         className="reservation_input"
                         value={arrivalTime}
-                        onChange={(event) => setArrivalTime(event.target.value)}
+                        onChange={handleArrivalTime}
                         type="time"
                     />
                 </div>
@@ -336,7 +426,7 @@ const ReservationForm = () => {
                         name="Reserve_Room"
                         type="button"
                         className="reserve_room_button"
-                        onClick={goToUserReservation}
+                        onClick={handleProceedButtonClick}
                     >
                             <p className="reserve_button_text">Proceed</p> 
                     </button>
@@ -362,7 +452,7 @@ const ReservationForm = () => {
                         placeholder="hh:mm"
                         className="reservation_input"
                         value={departureTime}
-                        onChange={(event) => setDepartureTime(event.target.value)}
+                        onChange={handleDepartureTime}
                         style={{width:"11rem"}}
                         type="time"
                     />

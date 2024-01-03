@@ -1,7 +1,7 @@
 import { React, useState } from "react";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
-import {collection, getDocs} from "firebase/firestore";
+import { getDoc, doc} from "firebase/firestore";
 import { auth, db } from "../config/firebase"; 
 import { signInWithEmailAndPassword } from "firebase/auth";
 
@@ -22,10 +22,10 @@ const LoginForm = () => {
             return false;
         }
 
-        /*else if (!loginPassword || loginPassword.length > 6 || !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(loginPassword)){
+        else if (!loginPassword /*|| loginPassword.length > 6 || !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(loginPassword)*/){
             alert("Password is required and must be at least 6 characters, containing special characters, lowercase and uppercase characters and numbers")
             return false;
-        }*/
+        }
     
         return true;
     }
@@ -40,34 +40,66 @@ const LoginForm = () => {
             }
             setIsLoading(true);
 
-            //Sign in with email and password
+            // Sign in with email and password
             const userCredential = await signInWithEmailAndPassword(auth, loginEmailAddress, loginPassword);
             const user = userCredential.user;
 
-            //Get user data from Firestore based on the email address
-            const querySnapShot = await getDocs(collection(db, "users"));
+            // Get user role from Firestore
+        const userDocRef = doc(db, "users", loginEmailAddress);
+        const userDoc = await getDoc(userDocRef);
 
-            querySnapShot.forEach((doc) => {
-                if (doc.data().emailAddress === loginEmailAddress) {
-                    const role = doc.data().role;
+        // Log userDoc to check its value
+        console.log("User Document:", userDoc);
 
-                    //Navigate to the appropriate screen based on the user's role
-                    if (role === "user") {
-                        history.push("/browse");
-                        alert("User Login Successful");
-                    } else if (role === "admin") {
-                        history.push("/adminhome");
-                        alert("Admin Login Successful");
-                    }
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+        
+            // Fetch additional user information
+            const userInfoDocRef = doc(db, "users", user.email);
+            const userInfoDocSnap = await getDoc(userInfoDocRef);
+        
+            if (userInfoDocSnap.exists()) {
+                const userInfoData = userInfoDocSnap.data();
+                // Do something with the user data, for example, set it in the state
+                console.log("User Data:", userInfoData);
+        
+                // Extract userRole after fetching additional user information
+                const userRole = userInfoData && userInfoData.role;
+        
+                // Navigate to the appropriate screen based on the user's role
+                if (userRole === "user") {
+                    history.push("/browse");
+                    alert("User Login Successful");
+                } else if (userRole === "admin") {
+                    history.push("/adminhome");
+                    alert("Admin Login Successful");
+                } else {
+                    console.error("Invalid user role");
+                    alert("Invalid user role");
                 }
-            })
+            } else {
+                console.log("No additional user information found");
+            }
+        } else {
+            console.error("User not found in Firestore");
+            alert("Invalid email or password");
+        }
             setIsLoading(false);
 
             //Reset Form Inputs
             setLoginEmailAddress("");
             setLoginPassword("");
         } catch (error) {
-            console.log("Error during login: ", error.message); 
+            console.log("Error during login: ", error.message);
+            
+            if (error.code === "auth/wrong-password" || error.code === "auth/user-not-found") {
+                setIsLoading(false);
+                alert("Invalid Email and Password. Try Again.");
+            } else {
+                setIsLoading(false);
+                alert("An error occurred during login. Please try again.");
+            }
+            setIsLoading(false);
         }
     };
 
@@ -83,11 +115,12 @@ const LoginForm = () => {
         
         <div> 
             <form onSubmit={handleLogin}>
+            {isLoading && <Loader style={{justifyContent: "center"}} /> }
             
-                    <div className="login_box">
-                    {isLoading && <Loader style={{justifyContent: "center"}} /> }
-                    
-                {!isLoading && (<div className="loginform">
+                {!isLoading && (
+                     <div className="login_box">
+                
+                <div className="loginform">
                 
             
                     <div style={{display: "flex", flexDirection:"column"}}>
@@ -134,8 +167,9 @@ const LoginForm = () => {
                     </div>
                     </div>
                     
+                </div>
                 </div>)}
-            </div>
+            
 
             <div style={{marginBottom:"0rem", marginTop:"1rem"}}>
                 <div className="login_link" style={{marginTop:"1rem", marginBottom: "1rem", marginLeft: "28rem"}}>

@@ -1,20 +1,18 @@
-import React, {useState} from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
 import { useLocation } from "react-router-dom";
-import { addDoc, collection, getDocs, getDoc, setDoc, doc} from "firebase/firestore";
 
 import hotel_logo from "../images/hotel.png";
 import profile_button from "../images/profile-user.png";
-import wishlist_button from "../images/wishlist.png";
+import reservations from "../images/tasks-completed.png";
 import fourRating from "../images/4starrating.png";
 import oneRating from "../images/1starrating.png";
 import twoRating from "../images/2starrating.png";
 import threeRating from "../images/3starrating.png";
 import fiveRating from "../images/5starrating.png";
 import zeroRating from "../images/0starrating.png";
-import wishlist from "../images/heart.png";
 import bed from "../images/bed.png";
 import bath from "../images/bathtub.png";
 import tv from "../images/television.png";
@@ -82,7 +80,7 @@ const HotelDisplay = () => {
                         </button>
                     </div>
 
-                    <div className="display_navbar" style={{ marginLeft: "65rem", width: "10.5rem"}}>
+                    <div className="display_navbar" style={{ marginLeft: "65rem", width: "12.8rem"}}>
 
                     <Link to ="/aboutus"  style={{height:"2.9rem", width:"2.5rem"}}>
                             <svg width="2.5rem" height="2.5rem">
@@ -96,11 +94,11 @@ const HotelDisplay = () => {
                             </svg>
                         </Link>
 
-                        {/*<Link to="/wishlist" style={{height:"2.9rem", width:"2.5rem"}}>
+                        <Link to="/reservationhistory" style={{height:"2.9rem", width:"2.5rem"}}>
                             <svg width="2.5rem" height="2.5rem">
-                                <image href={wishlist_button} height="100%" width="100%" />
+                                <image href={reservations} height="100%" width="100%" />
                             </svg>
-                        </Link>*/}
+                        </Link>
 
                         <Link to="/profile" style={{height:"2.9rem", width:"2.5rem"}}>
                             <svg width="2.5rem" height="2.5rem">
@@ -169,11 +167,6 @@ const HotelDisplay = () => {
                                     </svg>
                                 </div>
 
-                                <div className="wishlist_button_div">
-                                    <svg width= "100%" height="2rem" className="wishlist_button" >
-                                        <image href={wishlist} height="2rem" width= "100%" />
-                                    </svg>
-                                </div>
                             </div>
 
                         </div>

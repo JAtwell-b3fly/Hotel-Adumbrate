@@ -15,18 +15,20 @@ import fiveStar from "../images/5starrating.png";
 import Loader from "./Loader";
 
 
-const AvailableRoomsComp = ({ wishRoom, setWishRoom}) => {
+const AvailableRoomsComp = ({searchTerm}) => {
 
     const [avRooms, setAvRooms] = useState([]);
-    const [wishlist, setWishlist] = useState([]);
     const [selectedRoom, setSelectedRoom] = useState({});
     const [isLoading, setIsLoading] = useState(false);
+
+    const filteredRooms = avRooms.filter(room => 
+        room.suite.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        room.roomNumber.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     useEffect(() => {
         getAvailableRooms();
         console.log("Rooms Data: ", avRooms);
-        getWishlist();
-        console.log("Wishlist Data: ", wishlist);
     }, []);
 
     const getAvailableRooms = async() => {
@@ -44,26 +46,6 @@ const AvailableRoomsComp = ({ wishRoom, setWishRoom}) => {
         }
     }
 
-    const getWishlist = (async() => {
-        if (user) {
-            setIsLoading(true)
-            try {
-                const userDocRef = doc(db, "wishlists", user.email);
-                const docSnap = await getDoc(userDocRef);
-
-                if (docSnap.exists()) {
-                    const wishlistData = docSnap.data();
-                    setWishlist(wishlistData);
-                } else {
-                    console.log("No such document exists")
-                }
-            setIsLoading(false)
-            } catch (error) {
-                console.error("Error the wishlist information: ", error.message)
-            }
-        }
-    })
-
     const history = useHistory();
     const auth = getAuth();
     const user = auth.currentUser;
@@ -71,61 +53,6 @@ const AvailableRoomsComp = ({ wishRoom, setWishRoom}) => {
     const handleSelectedRoom = (roomId) => {
         const room = avRooms.find((room) => room.id === roomId);
         setSelectedRoom(room);
-    }
-
-    const handleAddToWishlist = async(roomId) => {
-        if(user) {
-            setIsLoading(true)
-            try {
-                const userDocRef = doc(db, "wishlists", user.email);
-                const docSnap = await getDoc(userDocRef);
-                const existingWishlist = docSnap.exists() ? docSnap.data().wishlist : {};
-
-                //Find the room data in your avRooms array based on roomId
-                const roomData = avRooms.find((room) => room.id === roomId);
-
-                //Add the room to the wishlist if its not already there
-                if (!existingWishlist[roomId]) {
-                    existingWishlist[roomId]= roomData;
-                }
-
-                //Update the Firestore document with the updated wishlist
-                await setDoc(userDocRef, { wishlist: existingWishlist }, { merge: true });
-                
-                //Update the local state to reflect the change
-                setWishlist(existingWishlist);
-
-                setIsLoading(false)
-                alert("Added To Wishlist");
-            } catch (error) {
-                console.error("Error adding to wishlist: ", error);
-            }
-        }
-    }
-
-    const handleRemoveWishlist = async(roomId) => {
-        if(user) {
-            setIsLoading(true)
-            try {
-                const userDocRef = doc(db, "wishlists", user.email);
-                const docSnap = await getDoc(userDocRef);
-                const existingWishlist = docSnap.exists() ? docSnap.data().wishlist : [];
-
-                //Filter out the room that needs to be removed
-                const updatedWishlist = existingWishlist.filter((id) => id !== roomId);
-
-                //Update the Firestore document with the updated wishlsit
-                await setDoc(userDocRef, {wishlist: updatedWishlist });
-
-                //Update the local state to reflect the change
-                setWishlist(updatedWishlist);
-
-                setIsLoading(false)
-                alert("Removed From Wishlist");
-            } catch (error) {
-                console.error("Error removing from wishlist: ", error);
-            }
-        }
     }
 
     const goToDisplay = ((roomId) => {
@@ -145,7 +72,67 @@ const AvailableRoomsComp = ({ wishRoom, setWishRoom}) => {
             (
                 <>
                 <div className = "scroll_container" style={{display:"flex", position: "relative", flexDirection: "row"}}>
-                {avRooms && avRooms.map((room) => (
+                {filteredRooms.map((filteredRoom) => (
+                    <div className="rooms_div" key={filteredRoom.id}>
+
+                    <div className="room_image_div">
+                        <svg width="100%" height="100%" style={{objectFit:"fill", borderRadius:"19%"}}>
+                            <image href={filteredRoom.image} height="100%" width="100%" />
+                        </svg>
+                    </div>
+
+                    <div className="rooms_info" >
+                        <h5 style={{color: "white", marginTop: "0.5rem"}}>{filteredRoom.roomNumber}</h5>
+
+                        <svg width="100%" height="100%" className="rooms_rating" style={{backgroundColor: "rgb(213, 206, 163, 0.1)"}}>
+                            {filteredRoom.rating === 0 && (
+                                <image href={zeroStar} height="100%" width="100%" />
+                            )}
+                           
+                           {filteredRoom.rating === 1 && (
+                                <image href={oneStar} height="100%" width="100%" />
+                            )}
+
+                            {filteredRoom.rating === 2 && (
+                                <image href={twoStar} height="100%" width="100%" />
+                            )}
+
+                            {filteredRoom.rating === 3 && (
+                                <image href={threeStar} height="100%" width="100%" />
+                            )}
+
+                            {filteredRoom.rating === 4 && (
+                                <image href={fourStar} height="100%" width="100%" />
+                            )}
+
+                            {filteredRoom.rating === 5 && (
+                                <image href={fiveStar} height="100%" width="100%" />
+                            )}
+                        </svg>
+
+                        <p style={{fontSize:"75%", color: "white"}}>{filteredRoom.bed} Bedrooms, {filteredRoom.bathroom} Bathrooms, {filteredRoom.airConditioning} Air Conditioning</p>
+                        <p style={{fontSize:"75%", color: "white"}}>{filteredRoom.suite} Suite</p>
+                        
+                        <h3 style={{color: "white"}}>R {filteredRoom.price}</h3>
+
+                        <div style={{display:"flex"}}>
+
+                            <button
+                                name="View More Button"
+                                className="view_more_button"
+                                style={{marginTop: "0.1px", marginLeft: "5.5rem"}}
+                                onClick={() => goToDisplay(filteredRoom.id)}
+                            >
+                        <p className="available_button_text" style={{paddingTop:"15px"}}> View More</p> 
+                            </button>
+                        </div>
+                        
+                    </div>
+
+                </div>
+                ))}
+
+                {filteredRooms.length = 0 && avRooms && avRooms.map((room) => (
                     <div className="rooms_div" key={room.id}>
 
                     <div className="room_image_div">
@@ -189,34 +176,6 @@ const AvailableRoomsComp = ({ wishRoom, setWishRoom}) => {
                         <h3 style={{color: "white"}}>R {room.price}</h3>
 
                         <div style={{display:"flex"}}>
-
-                            {/*{wishlist && room.id in wishlist ? 
-                            (<>
-                            <button
-                                className="view_more_button"
-                                style={{ marginLeft:"0.5rem", paddingTop: "15px", marginTop: "0.1px"}}
-                                name="Add To Wishlist Button"
-                                onClick = {() => handleRemoveWishlist(room.id)}
-                            >
-                              
-                              <p className="available_button_text" style={{fontSize: "85%"}}>
-                                 Remove from Favourites
-                                 </p> 
-                            </button>
-                            </>) :
-                            (<>
-                            <button
-                                className="view_more_button"
-                                style={{ marginLeft:"0.5rem", paddingTop: "15px", marginTop: "0.1px"}}
-                                name="Add To Wishlist Button"
-                                onClick = {() => handleAddToWishlist(room.id)}
-                            >
-                              
-                              <p className="available_button_text" style={{fontSize: "85%"}}>
-                                 Add To Favourites
-                                 </p> 
-                            </button>
-                            </>)}*/}
 
                             <button
                                 name="View More Button"

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
 import {auth, db} from "../config/firebase";
-import {collection, getDocs, doc, docs} from "firebase/firestore";
+import {collection, getDocs} from "firebase/firestore";
 
 import reservation from "../images/tasks-completed.png";
 import hotel_logo from "../images/hotel.png";
@@ -11,7 +11,6 @@ import profile_button from "../images/profile-user.png";
 import logout_button from "../images/log-out.png";
 import contact_us from "../images/telephone.png";
 import about_us from "../images/information-button.png";
-import hotel_img from "../images/Hotel Room Family 2.png";
 
 import Loader from "../Components/Loader";
 
@@ -54,11 +53,6 @@ const ReservationHistory = () => {
                 }
             });
 
-            console.log("Current User:", user);
-            console.log("Query Snapshot:", querySnapShot.docs);
-            console.log("User Email:", userCurrentUserEmail);
-            console.log("User Reservations:", userReservations);
-
             setReservations(userReservations);
         } catch (error) {
             console.error("Error in fetching reservations history");
@@ -73,6 +67,9 @@ const ReservationHistory = () => {
     useEffect(() => {
         console.log("Reservation History: ", reservations)
     }, [reservations])
+
+    const filteredReservations = reservations.filter((reservation) => reservation && reservation.referenceNumber
+    && reservation.referenceNumber.includes(searchTerm))
 
     return(
         <div className="Profile">
@@ -145,7 +142,63 @@ const ReservationHistory = () => {
                     </div>
 
                     <div style={{overflowY: "auto", overflowX: "auto", width: "100%", height: "28rem"}}>
-                        {reservations.map((reservation) => (
+                        {searchTerm ? 
+                        filteredReservations.map((filteredReservation) => {
+                            console.log("FilteredReservation: ", filteredReservation);
+                            return (
+                            
+                             <React.Fragment key={filteredReservation.id}>
+                                {filteredReservation && filteredReservation.referenceNumber ? (
+                                    <>
+                                    <div style={{display: "flex", flexDirection: "row"}}>
+                        <div style={{marginLeft: "2rem", height: "27.5rem", width: "30rem"}}>
+                            <svg className="reservationHistoryImg">
+                                <image href = {filteredReservation.image} width="100%" height="100%" />
+                            </svg>
+                        </div>
+
+                        <div style={{justifyContent: "left", margin: "1rem"}}>
+                            <h5 style={{color: "white", fontFamily: "Cinzel", marginBottom: "1rem"}}>Reference Number: {filteredReservation.referenceNumber}</h5>
+                            <h5  style={{color: "white", fontFamily: "Cinzel", fontWeight: "bold"}}>Dates:</h5>
+                            <div style={{display: "flex", marginTop: "1rem"}}>
+                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "5rem"}}>Arrival Date: {filteredReservation.arrivalDate}</p>
+                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "5rem"}}>Arrival Time: {filteredReservation.arrivalTime}</p>
+                            </div>
+                            <div style={{display: "flex"}}>
+                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "4rem"}}>Departure Date: {filteredReservation.departureDate}</p>
+                            <p style={{color: "white", fontFamily: "Cinzel"}}>Departure Time: {filteredReservation.depatureTime}</p>
+                            </div>
+                            <div style={{display: "flex"}}>
+                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "4rem"}}>Date when reservation was made: {filteredReservation.reservationMadeDate}</p>
+                            </div>
+                            <h5 style={{color: "white", fontFamily: "Cintel", fontWeight: "bold", marginBottom:"1rem"}}>Summary:</h5>
+                            <div style={{display: "flex"}}>
+                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "9.5rem"}}>Price: R {filteredReservation.price}</p>
+                            <p style={{color: "white", fontFamily: "Cinzel"}}>Number of Days: {filteredReservation.numberOfDays}</p>
+                            </div>
+                            <div style={{display: "flex"}}>
+                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "7.6rem"}}>Suite Type: {filteredReservation.suite}</p>
+                            <p style={{color: "white", fontFamily: "Cinzel"}}>Room Number: {filteredReservation.roomNumber}</p>
+                            </div>
+                            <div style={{display: "flex"}}>
+                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "7.2rem"}}>Number of Adults: {filteredReservation.numberOfAdults}</p>
+                            <p style={{color: "white", fontFamily: "Cinzel"}}>Number of Children: {filteredReservation.numberOfChildren}</p>
+                            </div>
+                        </div>
+                        </div>
+
+                        <p style={{color: "white", marginLeft: "5rem", marginRight: "5rem", textAlign: "center", width: "100%", marginBottom: "2rem"}}>____________________________________________________________________________________________________________</p>
+                                    </>
+                                ): null}
+                             
+                             </React.Fragment>
+                            )
+                        }
+                        )
+                        :
+                        reservations.map((reservation) => {
+                            console.log("Reservations: ", reservations)
+                            return (
                             <>
                              <React.Fragment key={reservation.id}>
                              <div style={{display: "flex", flexDirection: "row"}}>
@@ -157,7 +210,7 @@ const ReservationHistory = () => {
 
                         <div style={{justifyContent: "left", margin: "1rem"}}>
                             <h5 style={{color: "white", fontFamily: "Cinzel", marginBottom: "1rem"}}>Reference Number: {reservation.referenceNumber}</h5>
-                            <h5  style={{color: "white", fontFamily: "Cinzel", fontWeight: "bold"}}>Dates:</h5>
+                            <h5  style={{color: "white", fontFamily: "Cinzel", fontWeight: "bold", marginTop: "2rem"}}>Dates:</h5>
                             <div style={{display: "flex", marginTop: "1rem"}}>
                             <p style={{color: "white", fontFamily: "Cinzel", marginRight: "5rem"}}>Arrival Date: {reservation.arrivalDate}</p>
                             <p style={{color: "white", fontFamily: "Cinzel", marginRight: "5rem"}}>Arrival Time: {reservation.arrivalTime}</p>
@@ -169,9 +222,12 @@ const ReservationHistory = () => {
                             <div style={{display: "flex"}}>
                             <p style={{color: "white", fontFamily: "Cinzel", marginRight: "4rem"}}>Date when reservation was made: {reservation.reservationMadeDate}</p>
                             </div>
-                            <h5 style={{color: "white", fontFamily: "Cintel", fontWeight: "bold", marginBottom:"1rem"}}>Summary:</h5>
+                            <h5 style={{color: "white", fontFamily: "Cintel", fontWeight: "bold", marginBottom:"1rem", marginTop: "2rem"}}>Summary:</h5>
                             <div style={{display: "flex"}}>
-                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "9.5rem"}}>Price: R {reservation.price}</p>
+                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "9.5rem"}}>Price: R {reservation.priceCalculated}</p>
+                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "9.5rem"}}>Price per night: R {reservation.price}</p>
+                            </div>
+                            <div style={{display: "flex"}}>
                             <p style={{color: "white", fontFamily: "Cinzel"}}>Number of Days: {reservation.numberOfDays}</p>
                             </div>
                             <div style={{display: "flex"}}>
@@ -182,16 +238,28 @@ const ReservationHistory = () => {
                             <p style={{color: "white", fontFamily: "Cinzel", marginRight: "7.2rem"}}>Number of Adults: {reservation.numberOfAdults}</p>
                             <p style={{color: "white", fontFamily: "Cinzel"}}>Number of Children: {reservation.numberOfChildren}</p>
                             </div>
-                            <div style={{display: "flex"}}>
-                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "2rem", width: "100%"}}>Name: {reservation.name}</p>
-                            <p style={{color: "white", fontFamily: "Cinzel", marginRight: "2rem", width: "100%"}}>Email Address: {reservation.email}</p>
-                            <p style={{color: "white", fontFamily: "Cinzel", width: "100%", marginRight: "2rem"}}>Physical Address: {reservation.physicalAddress}</p>
-                            </div>
                         </div>
                         </div>
+
+                        <p style={{color: "white", marginLeft: "5rem", marginRight: "5rem", textAlign: "center", width: "100%", marginBottom: "2rem"}}>____________________________________________________________________________________________________________</p>
                              </React.Fragment>
                             </>
-                        ))}
+                            )
+})}
+                    {reservations && reservations.length === 0 && (
+                            <>
+                             <React.Fragment>
+                             <div style={{display: "flex", justifyContent: "center", marginTop: "10rem"}}>
+
+                        <div style={{justifyContent: "center", margin: "1rem"}}>
+                            <h5 style={{color: "white", fontFamily: "Cinzel", marginBottom: "1rem", textAlign: "center"}}>You Have Made No Reservations</h5>
+                        </div>
+                        </div>
+                        <p style={{color: "white", marginLeft: "5rem", marginRight: "5rem", textAlign: "center", width: "100%", marginBottom: "2rem"}}>____________________________________________________________________________________________________________</p>
+                             </React.Fragment>
+                             </>
+                    )
+                    }
                     </div>
                 </div>
 

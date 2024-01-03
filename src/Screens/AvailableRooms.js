@@ -7,7 +7,7 @@ import AvailableRoomsComp from "../Components/AvailableRooms";
 
 import hotel_logo from "../images/hotel.png";
 import profile_button from "../images/profile-user.png";
-import wishlist_button from "../images/wishlist.png";
+import reservations from "../images/tasks-completed.png";
 import back from "../images/back.png";
 import logout_button from "../images/log-out.png";
 import contact_us from "../images/telephone.png";
@@ -37,10 +37,6 @@ const AvailableRooms = () => {
     });
 
     const [searchTerm, setSearchTerm] = useState("");
-
-    const handleSearchTerm = (search) => {
-
-    }
 
     return(
         <div className="Profile">
@@ -77,12 +73,12 @@ const AvailableRooms = () => {
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                        <svg style={{width: "3rem", height: "3rem"}} className="searchbar">
+                        {/*<svg style={{width: "3rem", height: "3rem"}} className="searchbar">
                             <image href={search} width="100%" height="100%" />
-                        </svg>
+    </svg>*/}
                     </div>
 
-                    <div className="display_navbar" style={{width: "10.5rem"}}>
+                    <div className="display_navbar" style={{width: "12.8rem"}}>
 
                     <Link to ="/aboutus"  style={{height:"2.9rem", width:"2.5rem"}}>
                             <svg width="2.5rem" height="2.5rem">
@@ -96,11 +92,11 @@ const AvailableRooms = () => {
                             </svg>
                         </Link>
 
-                        {/*<Link to="/wishlist" style={{height:"2.9rem", width:"2.5rem"}}>
+                        <Link to="/reservationhistory" style={{height:"2.9rem", width:"2.5rem"}}>
                             <svg width="2.5rem" height="2.5rem">
-                                <image href={wishlist_button} height="100%" width="100%" />
+                                <image href={reservations} height="100%" width="100%" />
                             </svg>
-                        </Link>*/}
+                        </Link>
 
                         <Link to="/profile" style={{height:"2.9rem", width:"2.5rem"}}>
                             <svg width="2.5rem" height="2.5rem">
@@ -123,7 +119,7 @@ const AvailableRooms = () => {
                 <div>
                         <div>
                             <div>
-                                <AvailableRoomsComp />
+                                <AvailableRoomsComp searchTerm={searchTerm} />
                             </div>
                         </div>
 

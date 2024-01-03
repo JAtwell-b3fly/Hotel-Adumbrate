@@ -5,7 +5,7 @@ import { getAuth, signOut } from "firebase/auth";
 
 import hotel_logo from "../images/hotel.png";
 import profile_button from "../images/profile-user.png";
-import wishlist_button from "../images/wishlist.png";
+import reservations from "../images/tasks-completed.png";
 import hotel_image from "../images/Hotel Room Single 4.png";
 import about_us from "../images/information-button.png";
 import logout_button from "../images/log-out.png";
@@ -49,7 +49,7 @@ const AboutUs = () => {
                         </button>
                     </div>
 
-                    <div className="display_navbar" style={{marginLeft:"69rem", width: "10.5rem"}}>
+                    <div className="display_navbar" style={{marginLeft:"69rem", width: "12.8rem"}}>
 
                     <Link to ="/aboutus"  style={{height:"2.9rem", width:"2.5rem"}}>
                             <svg width="2.5rem" height="2.5rem">
@@ -63,11 +63,11 @@ const AboutUs = () => {
                             </svg>
                         </Link>
 
-                        {/*<Link to="/wishlist" style={{height:"2.9rem", width:"2.5rem"}}>
+                        <Link to="/reservationhistory" style={{height:"2.9rem", width:"2.5rem"}}>
                             <svg width="2.5rem" height="2.5rem">
-                                <image href={wishlist_button} height="100%" width="100%" />
+                                <image href={reservations} height="100%" width="100%" />
                             </svg>
-                        </Link>*/}
+                        </Link>
 
                         <Link to="/profile" style={{height:"2.9rem", width:"2.5rem"}}>
                             <svg width="2.5rem" height="2.5rem">
